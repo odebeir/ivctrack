@@ -1,0 +1,6 @@
+include README.rst
+include LICENSE
+exclude test\
+recursive-include ivctrack *.py
+recursive-exclude test *.*
+recursive-exclude temp *.*

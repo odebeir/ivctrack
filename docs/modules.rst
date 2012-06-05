@@ -1,0 +1,45 @@
+===========
+Modules
+===========
+
+Reader module
+-----------------------------
+
+.. automodule:: ivctrack.reader
+   :members:
+   :undoc-members:
+
+Helpers module
+-----------------------------
+
+.. automodule:: ivctrack.helpers
+   :members:
+   :undoc-members:
+
+Meanshift module
+-----------------------------
+
+.. automodule:: ivctrack.meanshift
+   :members:
+   :undoc-members:
+
+Integralshift module
+-----------------------------
+
+.. automodule:: ivctrack.integralshift
+   :members:
+   :undoc-members:
+
+Celltrack module
+-----------------------------
+
+.. automodule:: ivctrack.cellmodel
+   :members:
+   :undoc-members:
+
+Player module
+-----------------------------
+
+.. automodule:: ivctrack.player
+   :members:
+   :undoc-members:
