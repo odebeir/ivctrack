@@ -18,7 +18,7 @@ def benchmark_access():
     @timeit
     def process():
 
-        datazip = '../tests/data/seq0.zip'
+        datazip = '../test/data/seq0.zip'
         reader = ZipSource(datazip)
         g = reader.generator()
 
@@ -33,7 +33,7 @@ def benchmark_process():
     @timeit
     def process():
 
-        datazip = '../tests/data/seq0.zip'
+        datazip = '../test/data/seq0.zip'
         reader = ZipSource(datazip)
         g = reader.generator()
 

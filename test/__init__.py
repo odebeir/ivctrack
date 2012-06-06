@@ -1,1 +1,1 @@
-__author__ = 'olivier'
+from test_model import test_N

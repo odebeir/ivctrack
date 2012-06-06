@@ -238,8 +238,8 @@ class DumbSource(object):
 def main():
     """open data sample
     """
-    datazip_filename = '../tests/data/seq0_extract.zip'
-#    datazip_filename = '../tests/data/seq0.zip'
+    datazip_filename = '../test/data/seq0_extract.zip'
+#    datazip_filename = '../test/data/seq0.zip'
 
     source = ZipSource(datazip_filename)
     print source

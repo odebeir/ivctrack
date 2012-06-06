@@ -225,8 +225,8 @@ def test_experiment():
     """Test function: create an Experiment object for a sequence
     """
     #define sequence source
-    #    datazip_filename = '../tests/data/seq0_extract.zip'
-    datazip_filename = '../tests/data/seq0.zip'
+    #    datazip_filename = '../test/data/seq0_extract.zip'
+    datazip_filename = '../test/data/seq0.zip'
     reader = Reader(ZipSource(datazip_filename))
 
     experiment = Experiment(reader,exp_name='Test')
@@ -243,14 +243,14 @@ def test_experiment():
     experiment.track('fwd',last_frame=100)
 
     #save data to file
-    experiment.save_hdf5('../tests/temp/test.hdf5')
+    experiment.save_hdf5('../test/temp/test.hdf5')
 
 def test_track():
     """Test function: track some cells in a small sequence, compile cell positions into a Track object
     """
     #define sequence source
-#    datazip = '../tests/data/seq0_extract.zip'
-    datazip = '../tests/data/seq0.zip'
+#    datazip = '../test/data/seq0_extract.zip'
+    datazip = '../test/data/seq0.zip'
     reader = ZipSource(datazip)
 
     #mark initial cell position (may be in the middle of the sequence

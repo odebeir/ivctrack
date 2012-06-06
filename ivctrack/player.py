@@ -275,8 +275,8 @@ class InteractivePlayer(HasTraits):
 def test_player():
     """reopen an HDF5 file
     """
-    datazip_filename = '../tests/data/seq0.zip'
-    hdf5filename = '../tests/temp/test.hdf5'
+    datazip_filename = '../test/data/seq0.zip'
+    hdf5filename = '../test/temp/test.hdf5'
 
     reader = Reader(ZipSource(datazip_filename))
 #    reader = Reader(DumbSource())

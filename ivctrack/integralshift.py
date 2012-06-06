@@ -48,12 +48,12 @@ def test_image(s=0):
         x,y = np.meshgrid(range(20,40),range(30,50))
         t[30:50,20:40] = 55 - np.sqrt((x-30)**2+(y-40)**2)
     if s==3:
-        t = imread('../tests/data/crop.jpg').astype(float)
+        t = imread('../test/data/crop.jpg').astype(float)
         #normalization
         t = (t-t.min())/(t.max()-t.min())
         t = t**2
     if s==4:
-        t = imread('../tests/data/exp0001.jpg').astype(float)
+        t = imread('../test/data/exp0001.jpg').astype(float)
         #normalization
         t = (t-t.min())/(t.max()-t.min())
         t = t**2

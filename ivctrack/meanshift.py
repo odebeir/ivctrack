@@ -169,7 +169,7 @@ def testMeanshift():
     """open a binarised test image, compute meanshift for some triangle
     """
     print 'test MS'
-    im = imread('../tests/data/exp0001.jpg')
+    im = imread('../test/data/exp0001.jpg')
     cellLocations = [(340,190),(474,331),(120,231)]
     N = 16
     RWhite = 30

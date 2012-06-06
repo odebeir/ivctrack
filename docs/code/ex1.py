@@ -7,7 +7,7 @@ import numpy as npy
 import context
 from ivctrack.reader import ZipSource,Reader
 
-datazip = '../../tests/data/seq0_extract.zip'
+datazip = '../../test/data/seq0_extract.zip'
 
 reader = Reader(ZipSource(datazip))
 ima = reader.getframe()
