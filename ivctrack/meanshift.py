@@ -120,8 +120,15 @@ double off_y = offset_y;
 n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
 """
 
+    try:
+        import pkgutil
+        extra_code = pkgutil.get_data(__name__, 'c-code/meanshift.c')
+    except ImportError:
+        import pkg_resources
+        extra_code = pkg_resources.resource_string(__name__, 'c-code/meanshift.c')
 
-    extra_code = open(os.path.join(os.path.dirname(__file__),'meanshift.c')).read()
+
+#    extra_code = open(os.path.join(os.path.dirname(__file__),'meanshift.c')).read()
     
     if lut is None:
         lut = npy.arange(256,dtype = 'float64')

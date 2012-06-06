@@ -13,8 +13,9 @@ with open('LICENSE') as f:
 setup(
     name='ivctrack',
     packages=['ivctrack'],
+    package_data={'ivctrack': ['c-code/*']},
     version=__version__,
-    description='2D in-viyto cell tracking',
+    description='2D in-vitro cell tracking',
     author='Olivier Debeir',
     author_email='odebeir@ulb.ac.be',
     url='https://odebeir@bitbucket.org/odebeir/icvtrack.git',
