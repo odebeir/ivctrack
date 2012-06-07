@@ -222,7 +222,7 @@ class Experiment(object):
 #=================================================================================================
 
 def test_experiment():
-    """Test function: create an Experiment object for a sequence
+    """Test function: create an Experiment object for a sequence, data are saved in HDF5 file
     """
     #define sequence source
     #    datazip_filename = '../test/data/seq0_extract.zip'
@@ -232,7 +232,7 @@ def test_experiment():
     experiment = Experiment(reader,exp_name='Test')
 
     #mark initial cell position (may be in the middle of the sequence
-    cellLocations = [(221,184),(408,158),(529,367)]
+    cellLocations = [(221,184),(408,158),(529,367),(585,150),(290,125)]
     params = {'N':16,'radius_halo':20,'radius_soma':12,'exp_halo':10,'exp_soma':2,'niter':10,'alpha':.75}
     track_list = []
     for x0,y0 in cellLocations:
@@ -240,15 +240,16 @@ def test_experiment():
         experiment.add_track(t)
 
     #process the tracking
-    experiment.track('fwd',last_frame=100)
+    experiment.track('fwd',last_frame=200)
 
     #save data to file
     experiment.save_hdf5('../test/temp/test.hdf5')
 
 def test_track():
-    """Test function: track some cells in a small sequence, compile cell positions into a Track object
+    """Test function: track some cells in a small sequence, compile cell positions into a Track object, print x,y
     """
     #define sequence source
+
 #    datazip = '../test/data/seq0_extract.zip'
     datazip = '../test/data/seq0.zip'
     reader = ZipSource(datazip)
@@ -264,7 +265,7 @@ def test_track():
     #process the tracking in both fwd and rev directions
 #    for read_dir in ['fwd','rev']:
     for read_dir in ['fwd']:
-        g = reader.generator(read_dir=read_dir,first_frame=0,last_frame=100)
+        g = reader.generator(read_dir=read_dir,first_frame=0,last_frame=10)
         #reset Cell to mark position before changing tracking direction
         for t in track_list:
             t.reset_cell_pos()
@@ -277,21 +278,13 @@ def test_track():
     for t in track_list:
         t.export()
         print 'track range ',t.frame_range,',', len(t.rec), ' rec available'
-
-    #plot centered celltracks
-    fig = plt.figure(1)
-    ax = fig.add_subplot(111)
-
-    g = reader.generator(read_dir='fwd',first_frame=0,last_frame=100)
-    for frame,im in g:
-        for t in track_list:
-            x = t.data_center[:frame,0]
-            y = t.data_center[:frame,1]
-            print x,y
+        x = t.data_center[:frame,0]
+        y = t.data_center[:frame,1]
+        print x,y
 
 
 
 if __name__ == "__main__":
 
-    test_experiment()
-#    test_track()
+#    test_experiment()
+    test_track()

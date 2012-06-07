@@ -30,11 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from skimage.transform import integral_image,integrate
 import numpy as np
 
-import matplotlib.pyplot as plt
-
-import matplotlib.patches as mpatches
-import matplotlib.lines as mlines
-
 from scipy.ndimage import imread
 
 def test_image(s=0):
@@ -166,6 +161,12 @@ def shift(target,r0,c0,w,adapt = 'none',N=10):
 def test():
     """test integralshift on a grid
     """
+
+    import matplotlib.pyplot as plt
+
+    import matplotlib.patches as mpatches
+    import matplotlib.lines as mlines
+
     im = test_image(2)
 
     target = IntegratedImage(im)
@@ -194,10 +195,11 @@ def test():
             plt.gca().add_patch(stop)
 #            plt.gca().add_patch(arrow)
             ax.add_line(line)
+    plt.show()
 
 if __name__ == "__main__":
     test()
-    plt.show()
+
 
 
 

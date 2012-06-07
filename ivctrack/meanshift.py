@@ -27,7 +27,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 
-import matplotlib.pyplot as plt
 import numpy as npy
 from scipy.weave import inline
 from scipy.misc import imread
@@ -175,6 +174,9 @@ def generate_inverted_triangles(x,y,N,R):
 def testMeanshift():
     """open a binarised test image, compute meanshift for some triangle
     """
+
+    import matplotlib.pyplot as plt
+
     print 'test MS'
     im = imread('../test/data/exp0001.jpg')
     cellLocations = [(340,190),(474,331),(120,231)]
