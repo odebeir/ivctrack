@@ -190,8 +190,28 @@ def test_sequence():
 
         plt.cla()
 
+def test_annotate():
+    """Open the first frame of a sequence and wait the user click on initial cell position
+    returns a list of positions
+    """
 
-
+    datazip_filename = '../test/data/seq0_extract.zip'
+    reader = Reader(ZipSource(datazip_filename))
+    ima = reader.getframe()
+    fig = plt.figure(1)
+    ax = fig.add_subplot(111)
+    plt.imshow(ima)
+    print '*'*80
+    print 'left-click : add , right-click : remove last, middle-click : exit'
+    print '*'*80
+    xy = plt.ginput(n=0, timeout=0)
+    print xy
+    params = {'N':16,'radius_halo':30,'radius_soma':15}
+    cell_list = [ Cell(x0,y0,**params)  for x0,y0 in xy ]
+    for c in cell_list:
+        c.update(ima)
+        CellUi(c,ax).draw(ax)
+    plt.show()
 
 
 if __name__ == "__main__":
@@ -199,6 +219,7 @@ if __name__ == "__main__":
 #    test_static()
 #    test_player()
 #    test_track()
-    test_N()
+#    test_N()
 #    test_sequence()
 #    make_movie('../tests/temp/snp*.png',out='../tests/temp/movie.avi')
+    test_annotate()
