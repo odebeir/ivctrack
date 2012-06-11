@@ -248,7 +248,7 @@ class InteractivePlayer(HasTraits):
                 #fade
                 xy= tracks[t]['halo'][0,:,0:2]
                 self.figure.axes[0].plot(xy[:,0],xy[:,1],'wo',alpha=.5)
-            elif self.frame>= last:
+            elif self.frame> last:
                 #fade
                 xy= tracks[t]['halo'][-1,:,0:2]
                 self.figure.axes[0].plot(xy[:,0],xy[:,1],'wo',alpha=.5)
@@ -275,7 +275,7 @@ class InteractivePlayer(HasTraits):
 def test_player():
     """reopen an HDF5 file
     """
-    datazip_filename = '../test/data/seq0.zip'
+    datazip_filename = '../test/data/seq0_extract.zip'
     hdf5filename = '../test/temp/test.hdf5'
 
     reader = Reader(ZipSource(datazip_filename))

@@ -110,14 +110,14 @@ class Track(object):
 
     def update(self,frame,im,dir):
         if dir=='fwd':
-            if frame == self.frame+1:
+            if (frame == self.frame+1) | (frame == self.frame):
                 self.cell.update(im)
                 self.rec[frame] = ((self.cell.x,self.cell.y),self.cell.shift_halo,self.cell.shift_soma)
                 self.frame = frame
                 self.frame_range[1] = self.frame
 
         if dir=='rev':
-            if frame == self.frame-1:
+            if (frame == self.frame-1) | (frame == self.frame):
                 self.cell.update(im)
                 self.rec[frame] = ((self.cell.x,self.cell.y),self.cell.shift_halo,self.cell.shift_soma)
                 self.frame = frame
@@ -152,17 +152,26 @@ class Experiment(object):
     def add_track(self,track):
         self.track_list.append(track)
 
-    def track(self,read_dir,first_frame=0,last_frame=-1):
-        r  = self.reader.range()
+    def track(self,read_dir,first_frame=0,last_frame=None):
+        r  = range(0,self.reader.N())
+        frames = list(r[first_frame:last_frame])
 
         #reset Cell to mark position before changing tracking direction
         for t in self.track_list:
             t.reset_cell_pos()
-        for frame in r[first_frame:last_frame]:
-            print frame
-            im = self.reader.moveto(frame)
-            for t in self.track_list:
-                t.update(frame,im,read_dir)
+        if read_dir=='fwd':
+            for frame in frames:
+                print 'process frame ',frame
+                im = self.reader.moveto(frame)
+                for t in self.track_list:
+                    t.update(frame,im,read_dir)
+        if read_dir=='rev':
+            frames.reverse()
+            for frame in frames:
+                print 'process frame ',frame
+                im = self.reader.moveto(frame)
+                for t in self.track_list:
+                    t.update(frame,im,read_dir)
         self.post_process()
 
     def post_process(self):
@@ -200,7 +209,7 @@ class Experiment(object):
             center.attrs.create('labels',['frame','x','y'])
 
             #first column contains the frames where the cell has been tracked
-            frames = npy.arange(t.frame_range[0],t.frame_range[1])[:,npy.newaxis]
+            frames = npy.arange(t.frame_range[0],t.frame_range[1]+1)[:,npy.newaxis]
             center[:,:]= npy.hstack((frames,t.data_center))
 
             #one halo data per track
@@ -225,22 +234,26 @@ def test_experiment():
     """Test function: create an Experiment object for a sequence, data are saved in HDF5 file
     """
     #define sequence source
-    #    datazip_filename = '../test/data/seq0_extract.zip'
-    datazip_filename = '../test/data/seq0.zip'
+    datazip_filename = '../test/data/seq0_extract.zip'
+#    datazip_filename = '../test/data/seq0.zip'
     reader = Reader(ZipSource(datazip_filename))
 
     experiment = Experiment(reader,exp_name='Test')
 
     #mark initial cell position (may be in the middle of the sequence
-    cellLocations = [(221,184),(408,158),(529,367),(585,150),(290,125)]
-    params = {'N':16,'radius_halo':20,'radius_soma':12,'exp_halo':10,'exp_soma':2,'niter':10,'alpha':.75}
+    #from first frame fwd
+#    cellLocations = [(221,184),(408,158),(529,367)]
+    #from frame 29 rev
+    cellLocations = [(209.1698113207546, 183.46226415094338), (131.92924528301882, 207.04716981132071), (277.56603773584897, 99.73584905660374), (339.47641509433947, 58.462264150943383), (401.97641509433947, 72.023584905660357), (406.69339622641496, 172.84905660377353), (238.06132075471686, 281.92924528301887), (215.06603773584897, 339.71226415094338), (372.49528301886778, 268.36792452830184), (424.97169811320737, 251.26886792452831), (465.06603773584891, 15.419811320754661), (575.32547169811301, 38.415094339622556), (661.99999999999977, 111.52830188679241), (504.5707547169809, 97.966981132075432), (525.7971698113206, 125.67924528301882), (506.92924528301864, 232.40094339622641), (427.33018867924511, 306.69339622641508), (440.89150943396214, 343.83962264150944), (492.77830188679229, 289.00471698113205), (513.41509433962244, 320.25471698113205), (522.25943396226398, 361.52830188679241), (512.23584905660357, 402.80188679245282), (384.2877358490565, 404.57075471698113), (358.93396226415075, 388.06132075471697), (438.5330188679244, 454.09905660377359), (315.89150943396214, 371.55188679245282), (279.92452830188665, 418.72169811320754), (258.10849056603763, 414.59433962264154), (292.30660377358481, 434.64150943396226), (294.66509433962256, 459.99528301886789), (241.00943396226404, 467.07075471698113), (203.2735849056603, 456.45754716981133)]
+
+    params = {'N':8,'radius_halo':20,'radius_soma':12,'exp_halo':10,'exp_soma':2,'niter':10,'alpha':.75}
     track_list = []
     for x0,y0 in cellLocations:
-        t = Track(x0=x0,y0=y0, model=Cell, frame0=0,params=params)
+        t = Track(x0=x0,y0=y0,frame0=29,model=Cell,params=params)
         experiment.add_track(t)
 
     #process the tracking
-    experiment.track('fwd',last_frame=200)
+    experiment.track('rev')
 
     #save data to file
     experiment.save_hdf5('../test/temp/test.hdf5')
@@ -250,13 +263,15 @@ def test_track():
     """
     #define sequence source
 
-#    datazip = '../test/data/seq0_extract.zip'
-    datazip = '../test/data/seq0.zip'
+    datazip = '../test/data/seq0_extract.zip'
+#    datazip = '../test/data/seq0.zip'
     reader = ZipSource(datazip)
 
     #mark initial cell position (may be in the middle of the sequence
+    #from first frame fwd
     cellLocations = [(221,184),(408,158),(529,367)]
-    params = {'N':32,'radius_halo':30,'radius_soma':15}
+
+    params = {'N':16,'radius_halo':30,'radius_soma':15}
     track_list = []
     for x0,y0 in cellLocations:
         t = Track(x0=x0,y0=y0, model=Cell, frame0=0,params=params)
@@ -284,7 +299,9 @@ def test_track():
 
 
 
+
+
 if __name__ == "__main__":
 
-#    test_experiment()
-    test_track()
+    test_experiment()
+#    test_track()
