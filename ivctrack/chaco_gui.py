@@ -1,19 +1,14 @@
 from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray
-from traitsui.api import View, Group, Item, TextEditor,RangeEditor,ValueEditor,ListEditor
-from enable.api import ColorTrait
+from traitsui.api import View, Group, Item, RangeEditor
 from enable.component_editor import ComponentEditor
-from chaco.api import marker_trait, Plot, ArrayPlotData
-from chaco.tools.cursor_tool import CursorTool, BaseCursorTool
+from chaco.api import Plot, ArrayPlotData
 
-from numpy import linspace, sin,meshgrid,exp
 import numpy as npy
 
-from chaco.tools.api import PanTool, ZoomTool, DragZoom, DragTool
-
+from chaco.tools.api import PanTool, ZoomTool
 
 from ivctrack.cellmodel import Cell
 from ivctrack.reader import ZipSource,Reader
-
 
 from enable.api import BaseTool
 
@@ -65,8 +60,8 @@ class ScatterPlotTraits(HasTraits):
         self.model = model #class not an instance (needed to rebuild a nex instance when parameters are change)
         self.params = params
 
-        x = linspace(-6.28, 6.28, 100)
-        y = sin(x)
+        x = npy.linspace(-6.28, 6.28, 100)
+        y = npy.sin(x)
 
         self.plotdata = ArrayPlotData(x = x, y = y , imagedata = self.reader.getframe(),x0=[self.x0],y0=[self.y0],
                                         xc=[self.x0],yc=[self.y0])
