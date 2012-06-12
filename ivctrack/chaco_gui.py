@@ -22,12 +22,9 @@ class CustomTool(BaseTool):
     def normal_right_down(self, event):
         """see http://code.enthought.com/projects/files/ets_api/enthought.enable.events.MouseEvent.html
         """
+        #map to the data coordinate
         data = self.component.map_data((event.x, event.y))
         self.current_position = data
-#        print "Screen point:", event.x, event.y, event.middle_down
-#        print "Data:", data
-#        print type(self.component)
-#        print self.current_position
 
 class ScatterPlotTraits(HasTraits):
 
@@ -46,18 +43,12 @@ class ScatterPlotTraits(HasTraits):
     cell = Instance(Cell)
 
     plot = Instance(Plot)
-    color = ColorTrait("blue")
-    marker = marker_trait
-    marker_size = Int(4)
 
     cursor1 = Instance(CustomTool)
     cursor1pos = DelegatesTo('cursor1', prefix='current_position')
 
     traits_view = View(
         Group(
-#            Item('color', label="Color", style="custom"),
-#            Item('marker', label="Marker"),
-#            Item('marker_size', label="Size"),
             Item('plot', editor=ComponentEditor(), show_label=False),
             Item('params',   show_label=False),
             Item('x0',  show_label=False),
@@ -96,16 +87,6 @@ class ScatterPlotTraits(HasTraits):
         plot.tools.append(self.cursor1)
         self.cell_update()
 
-
-    def _color_changed(self):
-        self.renderer.color = self.color
-
-    def _marker_changed(self):
-        self.renderer.marker = self.marker
-
-    def _marker_size_changed(self):
-        self.renderer.marker_size = self.marker_size
-
     def _params_changed(self):
         """when cell parameters are changed, a new cell replace the previous one
         """
@@ -143,7 +124,6 @@ class ScatterPlotTraits(HasTraits):
         self.cell_update()
 
     def _cursor1pos_changed(self):
-        print 'curs1',self.cursor1pos
         self.x0,self.y0 = self.cursor1pos
         self.cell_update()
 
