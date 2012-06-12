@@ -33,7 +33,7 @@ from ivctrack.helpers import make_movie,timeit
 from time import sleep
 import h5py
 
-class Cell(object):
+class Cell():
     """Cell object, the model is described by:
 
     * a cell position
