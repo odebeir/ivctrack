@@ -80,8 +80,6 @@ class ScatterPlotTraits(HasTraits):
         Group(Item('button', show_label=False),
             Item('plot', editor=ComponentEditor(), show_label=False),
             Item('params',   show_label=False),
-            Item('x0',  show_label=False),
-            Item('y0',  show_label=False),
             Item('frame', editor = RangeEditor(mode = 'slider',low_name='low',high_name='high'),   show_label=False),
             orientation = "vertical"),
         width=800, height=600, resizable=True, title="Chaco Plot")
@@ -138,24 +136,16 @@ class ScatterPlotTraits(HasTraits):
             self.plotdata.set_data('yc', [self.cell.y])
             self.plotdata.set_data('x_path', self.cell.path[:,0])
             self.plotdata.set_data('y_path', self.cell.path[:,1])
+            self.plotdata.set_data('x0', [self.x0])
+            self.plotdata.set_data('y0', [self.y0])
 
         except AttributeError:
             pass #skip if plotdata not yet initialized
 
-    def _x0_changed(self):
-        self.cell.set(self.x0,self.y0)
-        self.plotdata.set_data('x0', [self.x0])
-        self.plotdata.set_data('y0', [self.y0])
-#        self.cell_update()
-
-    def _y0_changed(self):
-        self.cell.set(self.x0,self.y0)
-        self.plotdata.set_data('x0', [self.x0])
-        self.plotdata.set_data('y0', [self.y0])
-#        self.cell_update()
 
     def _cursor1pos_changed(self):
         self.x0,self.y0 = self.cursor1pos
+        self.cell.set(self.x0,self.y0)
         self.cell_update()
 
     def _button_fired(self):
