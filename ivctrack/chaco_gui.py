@@ -25,7 +25,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button
 from traitsui.api import View, Group, Item, RangeEditor
 from enable.component_editor import ComponentEditor
-from chaco.api import Plot, ArrayPlotData
+from chaco.api import Plot, ArrayPlotData, jet, gray
 
 from chaco.plot_graphics_context import PlotGraphicsContext
 
@@ -66,8 +66,8 @@ class ScatterPlotTraits(HasTraits):
     model = Class(Cell)
     params = Dict()
 
-    x0 = Range(0,640.,200)
-    y0 = Range(0,640.,200)
+    x0 = Range(0,1000.,200)
+    y0 = Range(0,1000.,200)
 
     cell = Instance(Cell)
 
@@ -98,14 +98,14 @@ class ScatterPlotTraits(HasTraits):
         y = npy.sin(x)
 
         self.plotdata = ArrayPlotData(x = x, y = y , imagedata = self.reader.getframe(),x0=[self.x0],y0=[self.y0],
-                                        xc=[self.x0],yc=[self.y0])
+                                        xc=[self.x0],yc=[self.y0],x_path=[self.x0],y_path=[self.y0])
 
         plot = Plot(self.plotdata)
-        plot.img_plot("imagedata") #, colormap=jet
-        plot.plot(("x0", "y0"), type="scatter", color="red")
+        plot.img_plot("imagedata",colormap=gray) #, colormap=jet
+        plot.plot(("x0", "y0"), type="scatter", color="red",marker='triangle')
         plot.plot(("xc", "yc"), type="scatter", color="yellow")
-        plot.plot(("x", "y"), type="line", color="blue")
-        self.renderer = plot.plot(("x", "y"), type="scatter", color="blue")[0]
+        plot.plot(("x_path", "y_path"), type="line", color="green",marker='circle')
+        self.renderer = plot.plot(("x", "y"), type="scatter", color="blue",marker='circle')[0]
 
         self.plot = plot
 
@@ -136,6 +136,8 @@ class ScatterPlotTraits(HasTraits):
             self.plotdata.set_data('y', halo[:,1])
             self.plotdata.set_data('xc', [self.cell.x])
             self.plotdata.set_data('yc', [self.cell.y])
+            self.plotdata.set_data('x_path', self.cell.path[:,0])
+            self.plotdata.set_data('y_path', self.cell.path[:,1])
 
         except AttributeError:
             pass #skip if plotdata not yet initialized
@@ -144,21 +146,20 @@ class ScatterPlotTraits(HasTraits):
         self.cell.set(self.x0,self.y0)
         self.plotdata.set_data('x0', [self.x0])
         self.plotdata.set_data('y0', [self.y0])
-        self.cell_update()
+#        self.cell_update()
 
     def _y0_changed(self):
         self.cell.set(self.x0,self.y0)
         self.plotdata.set_data('x0', [self.x0])
         self.plotdata.set_data('y0', [self.y0])
-        self.cell_update()
+#        self.cell_update()
 
     def _cursor1pos_changed(self):
         self.x0,self.y0 = self.cursor1pos
         self.cell_update()
 
     def _button_fired(self):
-        print 'hop'
-        save_plot(self.plot,'fig.png',1028,768)
+        save_plot(self.plot,'../test/temp/fig.png',1028,768)
 
 if __name__ == "__main__":
 

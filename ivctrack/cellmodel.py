@@ -74,7 +74,7 @@ class Cell():
     def update(self,im):
         """Update cell position with respect to a given image
         """
-
+        self.path = npy.zeros((self.niter,2))
         for iter in range(self.niter):
             #compute the shifts
             self.shift_halo = meanshift(im,self.tri_halo,0.0,0.0,lut = self.LutW)
@@ -87,10 +87,10 @@ class Cell():
             soma = npy.asarray([sh[0:2] for sh in self.shift_halo])
 
             self.x,self.y = (1.-self.alpha) * soma.mean(axis=0) + self.alpha * halo.mean(axis=0)
+            self.path[iter,:] = (self.x,self.y)
 
             #update the triangles
             self.build_triangles()
-
 
 class Track(object):
     """Object responsible for recording different cell position during time, it also manage the mark positions

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''GUI for interactive sequence manipulation using Matplotlib 
+'''GUI for interactive sequence manipulation using Matplotlib
 '''
 __author__ = 'Copyright (C) 2012, Olivier Debeir <odebeir@ulb.ac.be>'
 __license__ ="""
