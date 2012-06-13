@@ -92,6 +92,11 @@ class Cell():
             #update the triangles
             self.build_triangles()
 
+    def rec(self):
+        """returns a record grouping cell useful data
+        """
+        return ((self.x,self.y),self.shift_halo,self.shift_soma)
+
 class Track(object):
     """Object responsible for recording different cell position during time, it also manage the mark positions
     """
@@ -114,14 +119,14 @@ class Track(object):
         if dir=='fwd':
             if (frame == self.frame+1) | (frame == self.frame):
                 self.cell.update(im)
-                self.rec[frame] = ((self.cell.x,self.cell.y),self.cell.shift_halo,self.cell.shift_soma)
+                self.rec[frame] = self.cell.rec()
                 self.frame = frame
                 self.frame_range[1] = self.frame
 
         if dir=='rev':
             if (frame == self.frame-1) | (frame == self.frame):
                 self.cell.update(im)
-                self.rec[frame] = ((self.cell.x,self.cell.y),self.cell.shift_halo,self.cell.shift_soma)
+                self.rec[frame] = self.cell.rec()
                 self.frame = frame
                 self.frame_range[0] = self.frame
 
