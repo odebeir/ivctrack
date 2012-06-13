@@ -1,7 +1,33 @@
-from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray
+# -*- coding: utf-8 -*-
+'''This file contains one attempt to display model with Chaco framework
+'''
+__author__ = 'Copyright (C) 2012, Olivier Debeir <odebeir@ulb.ac.be>'
+__license__ ="""
+pyrankfilter is a python module that implements 2D numpy arrays rank filters, the filter core is C-code
+compiled on the fly (with an ad-hoc kernel).
+
+Copyright (C) 2012  Olivier Debeir
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+"""
+
+from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button
 from traitsui.api import View, Group, Item, RangeEditor
 from enable.component_editor import ComponentEditor
 from chaco.api import Plot, ArrayPlotData
+
+from chaco.plot_graphics_context import PlotGraphicsContext
 
 import numpy as npy
 
@@ -11,6 +37,13 @@ from ivctrack.cellmodel import Cell
 from ivctrack.reader import ZipSource,Reader
 
 from enable.api import BaseTool
+
+def save_plot(plot, filename, width, height):
+    plot.outer_bounds = [width, height]
+    plot.do_layout(force=True)
+    gc = PlotGraphicsContext((width, height), dpi=72)
+    gc.render_component(plot)
+    gc.save(filename)
 
 class CustomTool(BaseTool):
     current_position = CArray()
@@ -23,6 +56,7 @@ class CustomTool(BaseTool):
 
 class ScatterPlotTraits(HasTraits):
 
+    button = Button('Print')
     reader = Instance(Reader)
 
     frame = Range(low = 0)
@@ -43,7 +77,7 @@ class ScatterPlotTraits(HasTraits):
     cursor1pos = DelegatesTo('cursor1', prefix='current_position')
 
     traits_view = View(
-        Group(
+        Group(Item('button', show_label=False),
             Item('plot', editor=ComponentEditor(), show_label=False),
             Item('params',   show_label=False),
             Item('x0',  show_label=False),
@@ -121,6 +155,10 @@ class ScatterPlotTraits(HasTraits):
     def _cursor1pos_changed(self):
         self.x0,self.y0 = self.cursor1pos
         self.cell_update()
+
+    def _button_fired(self):
+        print 'hop'
+        save_plot(self.plot,'fig.png',1028,768)
 
 if __name__ == "__main__":
 
