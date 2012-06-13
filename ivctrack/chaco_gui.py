@@ -57,6 +57,8 @@ class CustomTool(BaseTool):
 class ScatterPlotTraits(HasTraits):
 
     button = Button('Print')
+    test1 = Button('Test1')
+
     reader = Instance(Reader)
 
     frame = Range(low = 0)
@@ -78,6 +80,7 @@ class ScatterPlotTraits(HasTraits):
 
     traits_view = View(
         Group(Item('button', show_label=False),
+            Item('test1', show_label=False),
             Item('plot', editor=ComponentEditor(), show_label=False),
             Item('params', style='simple',  show_label=False),
             Item('frame', editor = RangeEditor(mode = 'slider',low_name='low',high_name='high'),   show_label=False),
@@ -150,6 +153,29 @@ class ScatterPlotTraits(HasTraits):
 
     def _button_fired(self):
         save_plot(self.plot,'../test/temp/fig.png',1028,768)
+
+    def _test1_fired(self):
+        """seach the convergence point for a grid af initial starting points
+        plots the results (MPL)
+        """
+        print 'random seed'
+        bg = self.reader.getframe()
+        m,n = bg.shape
+        N = 30
+        xx,yy = npy.meshgrid(npy.linspace(0,n,N),npy.linspace(0,m,N))
+        data = []
+        for xr,yr in zip(xx.flatten(),yy.flatten()):
+            print xr,yr
+            self.cell = self.model(xr,yr,**self.params)
+            self.cell_update()
+            data.append((xr,yr,self.cell.x,self.cell.y))
+        data = npy.asarray(data)
+        print data
+        import matplotlib.pyplot as plt
+        plt.imshow(bg)
+        plt.plot(data[:,0],data[:,1],'or')
+        plt.plot(data[:,2],data[:,3],'o')
+        plt.show()
 
 if __name__ == "__main__":
 
