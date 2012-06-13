@@ -47,7 +47,7 @@ from enthought.traits.ui.wx.themed_slider_editor import ThemedSliderEditor
 
 from threading import Thread
 from time import sleep
-from enthought.pyface.timer.api import Timer
+from pyface.timer.api import Timer
 
 
 class FirstFrame(object):

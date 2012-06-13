@@ -22,8 +22,8 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button
-from traitsui.api import View, Group, Item, RangeEditor
+from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button, Trait, Float
+from traitsui.api import View, Group, Item, RangeEditor,ValueEditor,TableEditor,CustomEditor,TreeEditor,CompoundEditor
 from enable.component_editor import ComponentEditor
 from chaco.api import Plot, ArrayPlotData, jet, gray
 
@@ -66,8 +66,8 @@ class ScatterPlotTraits(HasTraits):
     model = Class(Cell)
     params = Dict()
 
-    x0 = Range(0,1000.,200)
-    y0 = Range(0,1000.,200)
+    x0 = Float(100)
+    y0 = Float(100)
 
     cell = Instance(Cell)
 
@@ -79,7 +79,7 @@ class ScatterPlotTraits(HasTraits):
     traits_view = View(
         Group(Item('button', show_label=False),
             Item('plot', editor=ComponentEditor(), show_label=False),
-            Item('params',   show_label=False),
+            Item('params', style='simple',  show_label=False),
             Item('frame', editor = RangeEditor(mode = 'slider',low_name='low',high_name='high'),   show_label=False),
             orientation = "vertical"),
         width=800, height=600, resizable=True, title="Chaco Plot")
