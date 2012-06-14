@@ -94,7 +94,7 @@ class Cell():
     def rec(self):
         """returns a record grouping cell useful data
         """
-        return [self.center,self.shift_halo,self.shift_soma]
+        return (self.center.copy(),self.shift_halo.copy(),self.shift_soma.copy())
 
     def rec_structure(self):
         """returns the structure of a rec produced by this model
@@ -155,24 +155,17 @@ class Track(object):
         L = list(self.records)
         L.sort()
         for i,s in enumerate(self.cell.rec_structure()):
-            print s
             #extract data
             data = []
             for k in L:
                 data.append(self.records[k][i])
             #create dataset
             data = npy.asarray(data)
-            print data.shape
             ds = hdf5_group.create_dataset(s['dataset_name'], data.shape, dtype=float)
             ds[:,:] = data
             #add attributes to the dataset
             for att_name,att_list in s['attributes']:
                 ds.attrs.create(att_name,att_list)
-
-
-
-
-
 
 class Experiment(object):
     """An experiment keep all track of on sequence together,
