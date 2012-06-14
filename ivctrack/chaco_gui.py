@@ -137,8 +137,8 @@ class ScatterPlotTraits(HasTraits):
         try:
             self.plotdata.set_data('x', halo[:,0])
             self.plotdata.set_data('y', halo[:,1])
-            self.plotdata.set_data('xc', [self.cell.x])
-            self.plotdata.set_data('yc', [self.cell.y])
+            self.plotdata.set_data('xc', [self.cell.center[0]])
+            self.plotdata.set_data('yc', [self.cell.center[1]])
             self.plotdata.set_data('x_path', self.cell.path[:,0])
             self.plotdata.set_data('y_path', self.cell.path[:,1])
             self.plotdata.set_data('x0', [self.x0])

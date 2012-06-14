@@ -46,8 +46,7 @@ class Cell():
     """
     def __init__(self,x0,y0,N=16,radius_halo=30,radius_soma=12,exp_halo=10,exp_soma=2,niter=10,alpha=.75):
         #model center
-        self.x = x0
-        self.y = y0
+        self.center = npy.asarray((x0,y0))
 
         #model parameters
         self.N = N
@@ -63,12 +62,12 @@ class Cell():
     def build_triangles(self):
         """Build triangle lists for the Cell model, one for the halo tracking, one for the soma tracking
         """
-        self.tri_halo = generate_triangles(self.x,self.y,self.N,self.radius_halo)
-        self.tri_soma = generate_inverted_triangles(self.x,self.y,self.N,self.radius_soma)
+        self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo)
+        self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N,self.radius_soma)
 
     def set(self,x,y):
-        self.x = x
-        self.y = y
+        self.center[0] = x
+        self.center[1] = y
         self.build_triangles()
 
     def update(self,im):
@@ -86,8 +85,8 @@ class Cell():
             #-nucleus centroid
             soma = npy.asarray([sh[0:2] for sh in self.shift_halo])
 
-            self.x,self.y = (1.-self.alpha) * soma.mean(axis=0) + self.alpha * halo.mean(axis=0)
-            self.path[iter,:] = (self.x,self.y)
+            self.center[:] = (1.-self.alpha) * soma.mean(axis=0) + self.alpha * halo.mean(axis=0)
+            self.path[iter,:] = self.center
 
             #update the triangles
             self.build_triangles()
@@ -95,7 +94,20 @@ class Cell():
     def rec(self):
         """returns a record grouping cell useful data
         """
-        return ((self.x,self.y),self.shift_halo,self.shift_soma)
+        return [self.center,self.shift_halo,self.shift_soma]
+
+    def rec_structure(self):
+        """returns the structure of a rec produced by this model
+        one dict entry will generate a distinct dataset, each line of these datasets will be populated with model data
+        """
+        center = {'dataset_name':'center',
+                  'attributes':[('features',['x','y']),]}
+        halo = {'dataset_name':'halo',
+                'attributes':[('features',meanshift_features),('dims',['0-frame','1-pie#','2-features'])]}
+        soma = {'dataset_name':'soma',
+                'attributes':[('features',meanshift_features),('dims',['0-frame','1-pie#','2-features'])]}
+
+        return [center,halo,soma]
 
 class Track(object):
     """Object responsible for recording different cell position during time, it also manage the mark positions
@@ -109,7 +121,7 @@ class Track(object):
         self.y0 = y0
         self.frame = frame0
         self.frame_range = [frame0,frame0]      # [first,last] tracked frames
-        self.rec = {}                           # data record
+        self.records = {}                           # data record
 
     def reset_cell_pos(self):
         self.frame = self.frame0
@@ -119,33 +131,17 @@ class Track(object):
         if dir=='fwd':
             if (frame == self.frame+1) | (frame == self.frame):
                 self.cell.update(im)
-                self.rec[frame] = self.cell.rec()
+                self.records[frame] = self.cell.rec()
                 self.frame = frame
                 self.frame_range[1] = self.frame
 
         if dir=='rev':
             if (frame == self.frame-1) | (frame == self.frame):
                 self.cell.update(im)
-                self.rec[frame] = self.cell.rec()
+                self.records[frame] = self.cell.rec()
                 self.frame = frame
                 self.frame_range[0] = self.frame
 
-    def export(self):
-        """export the rec to numpy array
-        """
-        L = list(self.rec)
-        L.sort()
-        halo=[]
-        soma = []
-        center = []
-        for k in L:
-            c,h,s = self.rec[k]
-            center.append(c)
-            halo.append(h)
-            soma.append(s)
-        self.data_center=npy.asarray(center)
-        self.data_halo=npy.asarray(halo)
-        self.data_soma=npy.asarray(soma)
 
     def export_to_hdf5(self,hdf5_group):
         """write the track results into the given HDF5 group
@@ -154,28 +150,28 @@ class Track(object):
 
         hdf5_group.attrs.create('model',str(self.model))
         hdf5_group.attrs.create('parameters',str(self.params))
-        center = hdf5_group.create_dataset('center', (self.data_center.shape[0],3), dtype=float)
-        center.attrs.create('labels',['frame','x','y'])
-
-        #first column contains the frames where the cell has been tracked
-        frames = npy.arange(self.frame_range[0],self.frame_range[1]+1)[:,npy.newaxis]
-        center[:,:]= npy.hstack((frames,self.data_center))
 
         # specific track data (depends on cell model)
+        L = list(self.records)
+        L.sort()
+        for i,s in enumerate(self.cell.rec_structure()):
+            print s
+            #extract data
+            data = []
+            for k in L:
+                data.append(self.records[k][i])
+            #create dataset
+            data = npy.asarray(data)
+            print data.shape
+            ds = hdf5_group.create_dataset(s['dataset_name'], data.shape, dtype=float)
+            ds[:,:] = data
+            #add attributes to the dataset
+            for att_name,att_list in s['attributes']:
+                ds.attrs.create(att_name,att_list)
 
-        #one halo data per track
-        halo = hdf5_group.create_dataset('halo', self.data_halo.shape, dtype=float)
-        halo[:,:,:] = self.data_halo
-        halo.attrs.create('features',meanshift_features)
-        halo.attrs.create('dims',['0-frame','1-pie#','2-features'])
-        halo.attrs.create('frame_range',self.frame_range)
 
-        #one soma data per track
-        soma = hdf5_group.create_dataset('soma', self.data_soma.shape, dtype=float)
-        soma[:,:,:] = self.data_soma
-        soma.attrs.create('features',meanshift_features)
-        soma.attrs.create('dims',['0-frame','1-pie#','2-features'])
-        soma.attrs.create('frame_range',self.frame_range)
+
+
 
 
 class Experiment(object):
@@ -210,12 +206,7 @@ class Experiment(object):
                 im = self.reader.moveto(frame)
                 for t in self.track_list:
                     t.update(frame,im,read_dir)
-        self.post_process()
 
-    def post_process(self):
-        for t in self.track_list:
-            t.export()
-            print 'track range ',t.frame_range,',', len(t.rec), ' rec available'
 
     def save_hdf5(self,filename):
         """saves all track data to HDF5 file
@@ -226,57 +217,28 @@ class Experiment(object):
         # these data are common for all models
         n_track = len(self.track_list)
         summary = fid.create_group("summary")
-        summary.attrs.create('seq.source',['hop'])
         summary.attrs.create('seq.source',[str(self.reader.source),self.reader.source.description])
         # valid frames
         frames = summary.create_dataset('frames', (n_track,3), dtype=int)
-        frames.attrs.create('labels',['#frame','first_frame','last_frame'])
+        frames.attrs.create('features',['#frame','first_frame','last_frame'])
         for no,t in enumerate(self.track_list):
-            frames[no,:] = [len(t.rec),t.frame_range[0],t.frame_range[1]]
+            frames[no,:] = [len(t.records),t.frame_range[0],t.frame_range[1]]
         # marks
         marks = summary.create_dataset('marks', (n_track,3), dtype=int)
-        marks.attrs.create('labels',['x','y','#frame'])
+        marks.attrs.create('features',['x','y','#frame'])
         for no,t in enumerate(self.track_list):
             marks[no,:] = [t.x0,t.y0,t.frame0]
 
-        # TRACKS group
+        # TRACK group
         tracks = fid.create_group("tracks")
         export_datetime = datetime.now().isoformat(' ')
         tracks.attrs.create('date',[export_datetime])
         for no,t in enumerate(self.track_list):
-            # one dataset per track
-
-            # generic track data (common for all models)
+            # one group per track
             track = tracks.create_group('track%04d'%no)
-
             t.export_to_hdf5(track)
 
-#            track.attrs.create('frame_range',t.frame_range)
-#
-#            track.attrs.create('model',str(t.model))
-#            track.attrs.create('parameters',str(t.params))
-#            center = track.create_dataset('center', (t.data_center.shape[0],3), dtype=float)
-#            center.attrs.create('labels',['frame','x','y'])
-#
-#            #first column contains the frames where the cell has been tracked
-#            frames = npy.arange(t.frame_range[0],t.frame_range[1]+1)[:,npy.newaxis]
-#            center[:,:]= npy.hstack((frames,t.data_center))
-#
-#            # specific track data (depends on cell model)
-#
-#            #one halo data per track
-#            halo = track.create_dataset('halo', t.data_halo.shape, dtype=float)
-#            halo[:,:,:] = t.data_halo
-#            halo.attrs.create('features',meanshift_features)
-#            halo.attrs.create('dims',['0-frame','1-pie#','2-features'])
-#            halo.attrs.create('frame_range',t.frame_range)
-#
-#            #one soma data per track
-#            soma = track.create_dataset('soma', t.data_soma.shape, dtype=float)
-#            soma[:,:,:] = t.data_soma
-#            soma.attrs.create('features',meanshift_features)
-#            soma.attrs.create('dims',['0-frame','1-pie#','2-features'])
-#            soma.attrs.create('frame_range',t.frame_range)
+
 
 
 
