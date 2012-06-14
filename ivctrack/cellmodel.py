@@ -147,6 +147,37 @@ class Track(object):
         self.data_halo=npy.asarray(halo)
         self.data_soma=npy.asarray(soma)
 
+    def export_to_hdf5(self,hdf5_group):
+        """write the track results into the given HDF5 group
+        """
+        hdf5_group.attrs.create('frame_range',self.frame_range)
+
+        hdf5_group.attrs.create('model',str(self.model))
+        hdf5_group.attrs.create('parameters',str(self.params))
+        center = hdf5_group.create_dataset('center', (self.data_center.shape[0],3), dtype=float)
+        center.attrs.create('labels',['frame','x','y'])
+
+        #first column contains the frames where the cell has been tracked
+        frames = npy.arange(self.frame_range[0],self.frame_range[1]+1)[:,npy.newaxis]
+        center[:,:]= npy.hstack((frames,self.data_center))
+
+        # specific track data (depends on cell model)
+
+        #one halo data per track
+        halo = hdf5_group.create_dataset('halo', self.data_halo.shape, dtype=float)
+        halo[:,:,:] = self.data_halo
+        halo.attrs.create('features',meanshift_features)
+        halo.attrs.create('dims',['0-frame','1-pie#','2-features'])
+        halo.attrs.create('frame_range',self.frame_range)
+
+        #one soma data per track
+        soma = hdf5_group.create_dataset('soma', self.data_soma.shape, dtype=float)
+        soma[:,:,:] = self.data_soma
+        soma.attrs.create('features',meanshift_features)
+        soma.attrs.create('dims',['0-frame','1-pie#','2-features'])
+        soma.attrs.create('frame_range',self.frame_range)
+
+
 class Experiment(object):
     """An experiment keep all track of on sequence together,
     it is responsible for saving tracking result to file
@@ -159,7 +190,7 @@ class Experiment(object):
     def add_track(self,track):
         self.track_list.append(track)
 
-    def track(self,read_dir,first_frame=0,last_frame=None):
+    def do_tracking(self,read_dir,first_frame=0,last_frame=None):
         r  = range(0,self.reader.N())
         frames = list(r[first_frame:last_frame])
 
@@ -192,6 +223,7 @@ class Experiment(object):
         fid = h5py.File(filename, 'w')
 
         # create one experiment SUMMARY dataset
+        # these data are common for all models
         n_track = len(self.track_list)
         summary = fid.create_group("summary")
         summary.attrs.create('seq.source',['hop'])
@@ -212,33 +244,39 @@ class Experiment(object):
         export_datetime = datetime.now().isoformat(' ')
         tracks.attrs.create('date',[export_datetime])
         for no,t in enumerate(self.track_list):
-            #one dataset per track
+            # one dataset per track
+
+            # generic track data (common for all models)
             track = tracks.create_group('track%04d'%no)
-            track.attrs.create('frame_range',t.frame_range)
-            print str(t.params)
 
-            track.attrs.create('model',str(t.model))
-            track.attrs.create('parameters',str(t.params))
-            center = track.create_dataset('center', (t.data_center.shape[0],3), dtype=float)
-            center.attrs.create('labels',['frame','x','y'])
+            t.export_to_hdf5(track)
 
-            #first column contains the frames where the cell has been tracked
-            frames = npy.arange(t.frame_range[0],t.frame_range[1]+1)[:,npy.newaxis]
-            center[:,:]= npy.hstack((frames,t.data_center))
-
-            #one halo data per track
-            halo = track.create_dataset('halo', t.data_halo.shape, dtype=float)
-            halo[:,:,:] = t.data_halo
-            halo.attrs.create('features',meanshift_features)
-            halo.attrs.create('dims',['0-frame','1-pie#','2-features'])
-            halo.attrs.create('frame_range',t.frame_range)
-
-            #one soma data per track
-            soma = track.create_dataset('soma', t.data_soma.shape, dtype=float)
-            soma[:,:,:] = t.data_soma
-            soma.attrs.create('features',meanshift_features)
-            soma.attrs.create('dims',['0-frame','1-pie#','2-features'])
-            soma.attrs.create('frame_range',t.frame_range)
+#            track.attrs.create('frame_range',t.frame_range)
+#
+#            track.attrs.create('model',str(t.model))
+#            track.attrs.create('parameters',str(t.params))
+#            center = track.create_dataset('center', (t.data_center.shape[0],3), dtype=float)
+#            center.attrs.create('labels',['frame','x','y'])
+#
+#            #first column contains the frames where the cell has been tracked
+#            frames = npy.arange(t.frame_range[0],t.frame_range[1]+1)[:,npy.newaxis]
+#            center[:,:]= npy.hstack((frames,t.data_center))
+#
+#            # specific track data (depends on cell model)
+#
+#            #one halo data per track
+#            halo = track.create_dataset('halo', t.data_halo.shape, dtype=float)
+#            halo[:,:,:] = t.data_halo
+#            halo.attrs.create('features',meanshift_features)
+#            halo.attrs.create('dims',['0-frame','1-pie#','2-features'])
+#            halo.attrs.create('frame_range',t.frame_range)
+#
+#            #one soma data per track
+#            soma = track.create_dataset('soma', t.data_soma.shape, dtype=float)
+#            soma[:,:,:] = t.data_soma
+#            soma.attrs.create('features',meanshift_features)
+#            soma.attrs.create('dims',['0-frame','1-pie#','2-features'])
+#            soma.attrs.create('frame_range',t.frame_range)
 
 
 
@@ -265,7 +303,7 @@ def test_experiment():
     experiment = Experiment(reader,exp_name='Test')
 
     #mark initial cell position (may be in the middle of the sequence
-    marks = import_marks('../test/data/rev_marks.csv')
+    marks = import_marks('../test/data/fwd_marks.csv')
     params = {'N':8,'radius_halo':20,'radius_soma':12,'exp_halo':10,'exp_soma':2,'niter':10,'alpha':.75}
 
     track_list = []
@@ -274,8 +312,8 @@ def test_experiment():
         experiment.add_track(t)
 
     #process the tracking
-    experiment.track('rev')
-    experiment.track('fwd')
+    experiment.do_tracking('rev')
+    experiment.do_tracking('fwd')
 
     #save data to file
     experiment.save_hdf5('../test/temp/test.hdf5')
