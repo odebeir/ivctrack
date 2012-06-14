@@ -38,6 +38,8 @@ from ivctrack.reader import ZipSource,Reader
 
 from enable.api import BaseTool
 
+from grid_assays import plot_grid
+
 def save_plot(plot, filename, width, height):
     plot.outer_bounds = [width, height]
     plot.do_layout(force=True)
@@ -158,24 +160,7 @@ class ScatterPlotTraits(HasTraits):
         """seach the convergence point for a grid af initial starting points
         plots the results (MPL)
         """
-        print 'random seed'
-        bg = self.reader.getframe()
-        m,n = bg.shape
-        N = 30
-        xx,yy = npy.meshgrid(npy.linspace(0,n,N),npy.linspace(0,m,N))
-        data = []
-        for xr,yr in zip(xx.flatten(),yy.flatten()):
-            print xr,yr
-            self.cell = self.model(xr,yr,**self.params)
-            self.cell_update()
-            data.append((xr,yr,self.cell.x,self.cell.y))
-        data = npy.asarray(data)
-        print data
-        import matplotlib.pyplot as plt
-        plt.imshow(bg)
-        plt.plot(data[:,0],data[:,1],'or')
-        plt.plot(data[:,2],data[:,3],'o')
-        plt.show()
+        plot_grid(bg=self.reader.getframe(),model=self.model,params=self.params)
 
 if __name__ == "__main__":
 
