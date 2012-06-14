@@ -80,9 +80,9 @@ class Cell():
             self.shift_soma = meanshift(im,self.tri_soma,0.0,0.0,lut = self.LutB)
 
             #update the position
-            #-halo centroid
+            # halo centroid
             halo = npy.asarray([sh[0:2] for sh in self.shift_halo])
-            #-nucleus centroid
+            # nucleus centroid
             soma = npy.asarray([sh[0:2] for sh in self.shift_halo])
 
             self.center[:] = (1.-self.alpha) * soma.mean(axis=0) + self.alpha * halo.mean(axis=0)
@@ -200,7 +200,6 @@ class Experiment(object):
                 for t in self.track_list:
                     t.update(frame,im,read_dir)
 
-
     def save_hdf5(self,filename):
         """saves all track data to HDF5 file
         """
@@ -230,10 +229,6 @@ class Experiment(object):
             # one group per track
             track = tracks.create_group('track%04d'%no)
             t.export_to_hdf5(track)
-
-
-
-
 
 #=================================================================================================
 def import_marks(filename):
@@ -304,19 +299,19 @@ def test_track():
             for t in track_list:
                 t.update(frame,im,read_dir)
 
-    #post process the records
-    for t in track_list:
-        t.export()
-        print 'track range ',t.frame_range,',', len(t.rec), ' rec available'
-        x = t.data_center[:frame,0]
-        y = t.data_center[:frame,1]
-        print x,y
-
+#    #post process the records
+#    for t in track_list:
+#        t.export()
+#        print 'track range ',t.frame_range,',', len(t.rec), ' rec available'
+#        x = t.data_center[:frame,0]
+#        y = t.data_center[:frame,1]
+#        print x,y
+#...to be fixed
 
 
 
 
 if __name__ == "__main__":
 
-    test_experiment()
-#    test_track()
+#    test_experiment()
+    test_track()
