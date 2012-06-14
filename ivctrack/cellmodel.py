@@ -46,7 +46,7 @@ class Cell():
     """
     def __init__(self,x0,y0,N=16,radius_halo=30,radius_soma=12,exp_halo=10,exp_soma=2,niter=10,alpha=.75):
         #model center
-        self.center = npy.asarray((x0,y0))
+        self.center = npy.asarray((x0,y0),dtype=float)
 
         #model parameters
         self.N = N
@@ -313,5 +313,5 @@ def test_track():
 
 if __name__ == "__main__":
 
-#    test_experiment()
-    test_track()
+    test_experiment()
+#    test_track()
