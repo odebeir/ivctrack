@@ -104,7 +104,6 @@ class ScatterPlotTraits(HasTraits):
         Group(Item('button', show_label=False),
             Item('test1', show_label=False),
             Item('plot', editor=ComponentEditor(), show_label=False),
-            Item('params', style='simple',  show_label=False),
             Item('frame', editor = RangeEditor(mode = 'slider',low_name='low',high_name='high'),   show_label=False),
             orientation = "vertical"),
         width=800, height=600, resizable=True, title="Chaco Plot")
@@ -112,16 +111,16 @@ class ScatterPlotTraits(HasTraits):
     def __init__(self,reader,model,params):
         super(ScatterPlotTraits, self).__init__()
 
+        #data
         self.reader = reader
         self.high = self.reader.N()-1
         self.model = model #class not an instance (needed to rebuild a nex instance when parameters are change)
-
         self.params = params
 
+        #parameters panel
         self.paramsUI = AutoParam()
         self.paramsUI.set(params)
-
-        self.paramsUI.on_trait_event(self.test)
+        self.paramsUI.on_trait_event(self.update_param)
 
         x = npy.linspace(-6.28, 6.28, 100)
         y = npy.sin(x)
@@ -145,15 +144,12 @@ class ScatterPlotTraits(HasTraits):
         plot.tools.append(self.cursor1)
         self.cell_update()
 
-    def test(self):
-        print 'modif'
+    def update_param(self):
         self.params = self.paramsUI.get_dict()
-
 
     def _params_changed(self):
         """when cell parameters are changed, a new cell replace the previous one
         """
-        print self.params
         self.cell = self.model(225,180,**self.params)
         self.cell.set(self.x0,self.y0)
         self.cell_update()
@@ -201,13 +197,6 @@ if __name__ == "__main__":
 
     params = {'N':16,'radius_halo':23,'radius_soma':12,'exp_halo':20,'exp_soma':2,'niter':10,'alpha':.75}
 
-#    for k in params:
-#        print k,type(params[k]),params[k]
-
-#    autoparam = AutoParam()
-#    autoparam.set(params)
-#    autoparam.configure_traits()
-#    print '>',autoparam.get_dict()
     demo = ScatterPlotTraits(reader=reader,params=params,model=Cell)
 
     demo.configure_traits()

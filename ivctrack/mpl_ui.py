@@ -62,7 +62,7 @@ class CellUi(object):
                     print 'remove',h
 #                    h.remove()
 
-        r = plt.Rectangle((self.cell.x-1,self.cell.y-1),3,3, facecolor=[.5,.5,.1])
+        r = plt.Rectangle((self.cell.center[0]-1,self.cell.center[1]-1),3,3, facecolor=[.5,.5,.1])
         self.h.append(ax.add_artist(r))
         self.draw_triangles(ax)
         self.draw_centroids(ax)
