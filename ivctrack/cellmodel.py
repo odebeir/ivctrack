@@ -22,18 +22,18 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-import os
-import numpy as npy
-from scipy.misc import imread
-
-from ivctrack.meanshift import LUT,generate_triangles,generate_inverted_triangles,meanshift,meanshift_features
-from ivctrack.reader import ZipSource,Reader
-from ivctrack.helpers import make_movie,timeit
-
+#generic import
 from datetime import datetime
-from time import sleep
+import numpy as npy
 import csv
+
+#specific import
 import h5py
+
+#local imports
+from meanshift import LUT,generate_triangles,generate_inverted_triangles,meanshift,meanshift_features
+from reader import ZipSource,Reader
+
 
 class Cell():
     """Cell object, the model is described by:
@@ -268,50 +268,6 @@ def test_experiment():
     #save data to file
     experiment.save_hdf5('../test/temp/test.hdf5')
 
-def test_track():
-    """Test function: track some cells in a small sequence, compile cell positions into a Track object, print x,y
-    """
-    #define sequence source
-
-    datazip = '../test/data/seq0_extract.zip'
-#    datazip = '../test/data/seq0.zip'
-    reader = ZipSource(datazip)
-
-    #mark initial cell position (may be in the middle of the sequence
-    #from first frame fwd
-    cellLocations = [(221,184),(408,158),(529,367)]
-
-    params = {'N':16,'radius_halo':30,'radius_soma':15}
-    track_list = []
-    for x0,y0 in cellLocations:
-        t = Track(x0=x0,y0=y0, model=Cell, frame0=0,params=params)
-        track_list.append(t)
-
-    #process the tracking in both fwd and rev directions
-#    for read_dir in ['fwd','rev']:
-    for read_dir in ['fwd']:
-        g = reader.generator(read_dir=read_dir,first_frame=0,last_frame=10)
-        #reset Cell to mark position before changing tracking direction
-        for t in track_list:
-            t.reset_cell_pos()
-        for frame,im in g:
-            print frame
-            for t in track_list:
-                t.update(frame,im,read_dir)
-
-#    #post process the records
-#    for t in track_list:
-#        t.export()
-#        print 'track range ',t.frame_range,',', len(t.rec), ' rec available'
-#        x = t.data_center[:frame,0]
-#        y = t.data_center[:frame,1]
-#        print x,y
-#...to be fixed
-
-
-
-
 if __name__ == "__main__":
 
     test_experiment()
-#    test_track()

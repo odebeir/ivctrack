@@ -30,7 +30,6 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import numpy as npy
 from scipy.weave import inline
 from scipy.misc import imread
-import os
 
 def dtype2ctype(array):
     """convert numpy type in C equivalent type
@@ -114,7 +113,6 @@ double off_x = offset_x;
 double off_y = offset_y;
 
 // call the function defined in the meanshift.c file
-
 //return an int to Python
 n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
 """
@@ -126,9 +124,6 @@ n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
         import pkg_resources
         extra_code = pkg_resources.resource_string(__name__, 'c-code/meanshift.c')
 
-
-#    extra_code = open(os.path.join(os.path.dirname(__file__),'meanshift.c')).read()
-    
     if lut is None:
         lut = npy.arange(256,dtype = 'float64')
     
@@ -136,10 +131,12 @@ n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
     shift = npy.zeros((n,8),dtype = 'float64', order='C')
     out = npy.zeros(8,dtype = 'float64', order='C')
 
+    force = False
     for i,triangle in enumerate(triangleList):
         out[:] = 0.0
-        inline(code, ['ima','out','triangle','lut','offset_x','offset_y'],support_code=extra_code)
+        inline(code, ['ima','out','triangle','lut','offset_x','offset_y'],support_code=extra_code,force=force)
         shift[i,:] = npy.copy(out)
+        force = False
     return shift
 
 

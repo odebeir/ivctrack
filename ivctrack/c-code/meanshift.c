@@ -24,7 +24,7 @@ int compute_g(unsigned char * pdata,int sizeX,int sizeY,double off_x,double off_
 
 	pimage = (unsigned char*)pdata;
 
-	mx0 = TRIANGLE[0]+off_x;
+    mx0 = TRIANGLE[0]+off_x;
 	my0 = TRIANGLE[1]+off_y;
 	mx1 = TRIANGLE[2]+off_x;
 	my1 = TRIANGLE[3]+off_y;
@@ -38,17 +38,17 @@ int compute_g(unsigned char * pdata,int sizeX,int sizeY,double off_x,double off_
 	x2 = mx2;
 	y2 = my2;
 
-	//bounding box du triangle
+	//triangle bounding box
 	bbx0 = (int)(MIN(MIN(x0,x1),x2))-1;
 	bbx1 = (int)(MAX(MAX(x0,x1),x2))+1;
 	bby0 = (int)(MIN(MIN(y0,y1),y2))-1;
 	bby1 = (int)(MAX(MAX(y0,y1),y2))+1;
 
-	//centre du triangle
+	//triangle center
 	xcentre = (x0+x1+x2)/3.0;
 	ycentre = (y0+y1+y2)/3.0;
 
-	//calcul des droites
+	//triangle sides
 	if(x0==x1){
 		a0 = 1.0;
 		b0 = 0.0;
@@ -66,7 +66,7 @@ int compute_g(unsigned char * pdata,int sizeX,int sizeY,double off_x,double off_
 			c0 = y0/(y1-y0) - x0/(x1-x0);
 		}
 	}
-	//normalisation des a,b,c
+	//normalisation
 	n = sqrt(a0*a0+b0*b0);	a0 /= n; b0/= n; c0 /= n;
 	if ((a0*x2+b0*y2+c0) > 0) s0 = 1.0; else s0 = -1.0;
 	x0 = mx1;
@@ -93,7 +93,7 @@ int compute_g(unsigned char * pdata,int sizeX,int sizeY,double off_x,double off_
 			c1 = y0/(y1-y0) - x0/(x1-x0);
 		}
 	}
-	//normalisation des a,b,c
+	//normalisation
 	n = sqrt(a1*a1+b1*b1);	a1 /= n; b1/= n; c1 /= n;
 	if ((a1*x2+b1*y2+c1) > 0.0) s1 = 1.0; else s1 = -1.0;
 
@@ -121,11 +121,11 @@ int compute_g(unsigned char * pdata,int sizeX,int sizeY,double off_x,double off_
 			c2 = y0/(y1-y0) - x0/(x1-x0);
 		}
 	}
-	//normalisation des a,b,c
+	//normalisation
 	n = sqrt(a2*a2+b2*b2);	a2 /= n; b2/= n; c2 /= n;
 	if ((a2*x2+b2*y2+c2) > 0.0) s2 = 1.0; else s2 = -1.0;
 
-	//Remplissage du tableau
+	//Data table Filling
 	surf = 0.0f;
 	surfalpha = 0.0f;
 	totalvalue =  0.0f;
@@ -135,19 +135,17 @@ int compute_g(unsigned char * pdata,int sizeX,int sizeY,double off_x,double off_
 	for(xint=bbx0;xint<=bbx1;xint++)
 	{
 		for(yint=bby0;yint<=bby1;yint++){
-			pos = xint +yint * sizeX; //weave + linux ok ?
-			//pos = xint + (sizeY-yint) * sizeX; //ligne par ligne ! librairie utilisée sous linux...
-			//pos = yint + xint * sizeY;
+			pos = xint +yint * sizeX;
 			x = (double)xint;
 			y = (double)yint;
 			xr = x - xcentre;
 			yr = y - ycentre;
 			if((((a0*x+b0*y+c0)*s0)>=0.0)&&
-				(((a1*x+b1*y+c1)*s1)>=0.0)&& //alpha du flou
+				(((a1*x+b1*y+c1)*s1)>=0.0)&&
 				(((a2*x+b2*y+c2)*s2)>=0.0))
 			{
-				alpha = MIN(fabs(a0*x+b0*y+c0),1.0) * MIN(fabs(a1*x+b1*y+c1),1.0) * MIN(fabs(a2*x+b2*y+c2),1.0); //1 � l'int�rieur du triangle et sur les bords <1 droite normalis� donne la distance
-				value = (double)(LUT[*(pimage+pos)]);//LUT[*(pimage+pos)];//lut[*(pimage+pos)];
+				alpha = MIN(fabs(a0*x+b0*y+c0),1.0) * MIN(fabs(a1*x+b1*y+c1),1.0) * MIN(fabs(a2*x+b2*y+c2),1.0);
+				value = (double)(LUT[*(pimage+pos)]);
 				sumX += xr*alpha;
 				sumY += yr*alpha;
 				sumXw += xr*alpha*value;
