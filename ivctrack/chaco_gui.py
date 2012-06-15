@@ -40,12 +40,29 @@ from enable.api import BaseTool
 
 from grid_assays import plot_grid
 
+
+class AutoParam(HasTraits):
+    """create a parameters structure from a Dict
+    """
+    def __init__(self, **traits):
+        HasTraits.__init__(self,**traits)
+    def set(self,params):
+        for k in params:
+            self.__setattr__(k,params[k])
+            self.add_trait(k,type(params[k]))
+    def get_dict(self):
+        """returns the updated dict
+        """
+        return self.__dict__
+
+
 def save_plot(plot, filename, width, height):
     plot.outer_bounds = [width, height]
     plot.do_layout(force=True)
     gc = PlotGraphicsContext((width, height), dpi=72)
     gc.render_component(plot)
     gc.save(filename)
+
 
 class CustomTool(BaseTool):
     current_position = CArray()
@@ -56,7 +73,10 @@ class CustomTool(BaseTool):
         data = self.component.map_data((event.x, event.y))
         self.current_position = data
 
+
 class ScatterPlotTraits(HasTraits):
+
+    paramsUI = Instance(AutoParam)
 
     button = Button('Print')
     test1 = Button('Test1')
@@ -80,7 +100,7 @@ class ScatterPlotTraits(HasTraits):
     cursor1 = Instance(CustomTool)
     cursor1pos = DelegatesTo('cursor1', prefix='current_position')
 
-    traits_view = View(
+    traits_view = View(Item('paramsUI',style='custom'),
         Group(Item('button', show_label=False),
             Item('test1', show_label=False),
             Item('plot', editor=ComponentEditor(), show_label=False),
@@ -95,7 +115,13 @@ class ScatterPlotTraits(HasTraits):
         self.reader = reader
         self.high = self.reader.N()-1
         self.model = model #class not an instance (needed to rebuild a nex instance when parameters are change)
+
         self.params = params
+
+        self.paramsUI = AutoParam()
+        self.paramsUI.set(params)
+
+        self.paramsUI.on_trait_event(self.test)
 
         x = npy.linspace(-6.28, 6.28, 100)
         y = npy.sin(x)
@@ -118,6 +144,11 @@ class ScatterPlotTraits(HasTraits):
         self.cursor1 = CustomTool(plot)
         plot.tools.append(self.cursor1)
         self.cell_update()
+
+    def test(self):
+        print 'modif'
+        self.params = self.paramsUI.get_dict()
+
 
     def _params_changed(self):
         """when cell parameters are changed, a new cell replace the previous one
@@ -162,6 +193,7 @@ class ScatterPlotTraits(HasTraits):
         """
         plot_grid(bg=self.reader.getframe(),model=self.model,params=self.params)
 
+
 if __name__ == "__main__":
 
     datazip_filename = '../test/data/seq0_extract.zip'
@@ -169,6 +201,13 @@ if __name__ == "__main__":
 
     params = {'N':16,'radius_halo':23,'radius_soma':12,'exp_halo':20,'exp_soma':2,'niter':10,'alpha':.75}
 
+#    for k in params:
+#        print k,type(params[k]),params[k]
+
+#    autoparam = AutoParam()
+#    autoparam.set(params)
+#    autoparam.configure_traits()
+#    print '>',autoparam.get_dict()
     demo = ScatterPlotTraits(reader=reader,params=params,model=Cell)
 
     demo.configure_traits()
