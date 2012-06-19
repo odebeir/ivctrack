@@ -47,3 +47,14 @@ Setup
 
     todo !
 
+Test data
+-----------------------------
+Some test data can be downloaded here:
+
+* :download:`single phase contrast frame (.JPG) <../test/data/exp0001.jpg>`
+
+* :download:`some marks for the first sequence frame (.CSV) <../test/data/fwd_marks.csv>`
+
+* :download:`some marks for the last sequence frame (.CSV) <../test/data/rev_marks.csv>`
+
+* :download:`small zipped phase contrast sequence (30 frames) (.ZIP) <../test/data/seq0_extract.zip>`

@@ -17,6 +17,3 @@ License
 .. include:: ../LICENSE
 
 
-Data samples
----------------
-Some data sample are available here.
