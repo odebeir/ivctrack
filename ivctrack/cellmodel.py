@@ -230,6 +230,7 @@ class Experiment(object):
             track = tracks.create_group('track%04d'%no)
             t.export_to_hdf5(track)
 
+        del(fid)
 #=================================================================================================
 def import_marks(filename):
     """read a CSV file containing lines such as:
