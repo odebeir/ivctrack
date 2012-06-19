@@ -46,7 +46,7 @@ class SimplePlayer(object):
     def plot_tracks(self):
         tracks = self.fid['tracks']
         for t in tracks:
-            xy= tracks[t]['center'][:,1:3]
+            xy= tracks[t]['center']
             plt.plot(xy[:,0],xy[:,1])
 
     def plot_halo(self):
@@ -65,60 +65,6 @@ def test_player():
     player = SimplePlayer(reader,hdf5filename)
 
 
-def test_track():
-    """Test function: track some cells in a small sequence, compile cell positions into a Track object
-    """
-    #define sequence source
-    #    datazip = '../tests/data/seq0_extract.zip'
-    datazip = '../test/data/seq0.zip'
-    reader = ZipSource(datazip)
-
-    #mark initial cell position (may be in the middle of the sequence
-    cellLocations = [(221,184),(408,158),(529,367)]
-    params = {'N':32,'radius_halo':30,'radius_soma':15}
-    track_list = []
-    for x0,y0 in cellLocations:
-        t = Track(x0=x0,y0=y0, model=Cell, frame0=0,params=params)
-        track_list.append(t)
-
-        #process the tracking in both fwd and rev directions
-    #    for read_dir in ['fwd','rev']:
-    for read_dir in ['fwd']:
-        g = reader.generator(read_dir=read_dir,first_frame=0,last_frame=100)
-        #reset Cell to mark position before changing tracking direction
-        for t in track_list:
-            t.reset_cell_pos()
-        for frame,im in g:
-            print frame
-            for t in track_list:
-                t.update(frame,im,read_dir)
-
-    #post process the records
-    for t in track_list:
-        t.export()
-        print 'track range ',t.frame_range,',', len(t.rec), ' rec available'
-
-    #plot centered celltracks
-    fig = plt.figure(1)
-    ax = fig.add_subplot(111)
-
-    g = reader.generator(read_dir='fwd',first_frame=0,last_frame=100)
-    for frame,im in g:
-        ax.imshow(im)
-        for t in track_list:
-            x = t.data_center[:frame,0]
-            y = t.data_center[:frame,1]
-            ax.plot(x,y,'-')
-
-        ax.set_xlim([100,300])
-        ax.set_ylim([100,250])
-        plt.draw()
-        sleep(.01)
-        plt.savefig('../test/temp/snp%04d.png'%frame)
-
-        plt.cla()
-
-
 def test_static():
     """Test function: apply meanshift on several cell in one single frame
     """
@@ -135,7 +81,7 @@ def test_static():
 
     for c in cell_list:
         c.update(im)
-        CellUi(c).draw(ax)
+        CellUi(c,ax).draw(ax)
 
     plt.show()
 
@@ -190,7 +136,7 @@ def test_sequence():
 
         plt.cla()
 
-
+    make_movie('../test/temp/snp*.png',out='../test/temp/movie.avi')
 
 def test_annotate():
     """Open the first frame of a sequence and wait the user click on initial cell position
@@ -221,8 +167,6 @@ if __name__ == "__main__":
 
 #    test_static()
 #    test_player()
-#    test_track()
-    test_N()
-#     test_sequence()
-#    make_movie('../tests/temp/snp*.png',out='../tests/temp/movie.avi')
+#    test_N()
+    test_sequence()
 #    test_annotate()
