@@ -25,7 +25,8 @@ Getting the distribution:
 
 * download the distribution file :download:`ivctrack-0.1.0.tar.gz <../dist/ivctrack-0.1.0.tar.gz>`
 
-Source repository: `Bitbucket <https://bitbucket.org/odebeir/ivctrack/>`_
+* from the source repository: `Bitbucket <https://bitbucket.org/odebeir/ivctrack/>`_
+
 
 Author's project website: `<http://homepages.ulb.ac.be/~odebeir/ivctrack>`_
 
@@ -39,13 +40,15 @@ Setup
 
     python setup.py install
 
-* now the module should be available in your python environment e.g.
+* now the module should be available in your python environment
+    the following code track some cells on the complete sequence, result is save into a HDF5 file
+    the appropriate data path should be given (see test_experiment function)
 
 .. code-block:: python
 
-    from ivctrack import
+    from ivctrack.cellmodel import test_experiment
 
-    todo !
+    test_experiment()
 
 Test data
 -----------------------------

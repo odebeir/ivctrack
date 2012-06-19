@@ -54,3 +54,10 @@ Test modules
 .. automodule:: test.test_model
    :members:
    :undoc-members:
+
+GUI modules
+-----------------------------
+
+.. automodule:: ivctrack.chaco_gui
+   :members:
+   :undoc-members:
