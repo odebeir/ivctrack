@@ -24,6 +24,22 @@ In vitro cell tracking is one tool for cell motility observation both qualitativ
 The implemented method presented here is a tentative of python porting of previous code written for Matlab. This method
 was used in several publications for cell speed measurement [deb05]_ and cell chemotactism analysis [deb04]_ .
 
+
+This project is published under GPL v3 license.
+
+Features
+==================
+
+* zipped sequence of images (.png,...)
+
+* tracking using multiple meanshift kernels
+
+* both forward and reverse tracking
+
+* results saved into a single HDF5 per sequence
+
+==========================================================================
+
 Video example :
 
 * `Hi-resolution tracking example <http://www.youtube.com/watch?list=UUDj1Oeqc8ICa-P0l7pQjoQA&feature=player_detailpage&v=IOlPvcS4pRI>`_
@@ -31,14 +47,17 @@ Video example :
 * `Example of a mitosis tracked in reverse time <http://www.youtube.com/watch?list=UUDj1Oeqc8ICa-P0l7pQjoQA&feature=player_detailpage&v=T_88S9S3F6c>`_
 
 
-This project is published under GPL v3 license.
+==========================================================================
 
-Contents:
+
+Contents
+==================
 
 .. toctree::
    :maxdepth: 2
 
    intro.rst
+   install.rst
    examples.rst
    modules.rst
    references.rst

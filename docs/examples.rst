@@ -88,7 +88,7 @@ example
 
 .. ipython::
 
-   @savefig plot_simple.png width=10in
+   @savefig plot_simple.png width=4in
    In [151]: plot([1,2,3]);
 
    # use a semicolon to suppress the output
