@@ -7,11 +7,13 @@ Setup requirement
 Some dependencies are needed in order to run ivctrack programs.
 Basically for the tracking itself, numpy and scipy are used (including weave inline C-compilation function).
 
-For some examples, Matplotlib is used.
+For some examples, `matplotlib <http://matplotlib.sourceforge.net/index.html>`_ is used.
 
-For some graphical user interfaces, chaco and traits are required.
+For some graphical user interfaces, `chaco <http://code.enthought.com/projects/chaco/>`_
+and
+`traits <http://docs.enthought.com/traitsui/traitsui_user_manual/index.html>`_ are required.
 
-Fo some test functions mencoder is used to make a movie from separate .png files.
+Fo some test functions `mencoder <http://www.mplayerhq.hu/design7/news.html>`_ is used to make a movie from separate .png files.
 
 
 Download
@@ -19,7 +21,7 @@ Download
 
 Getting the distribution:
 
-* `ivctrack-0.1.0.tar.gz <../dist/ivctrack-0.1.0.tar.gz>`
+* download the distribution file :download:`ivctrack-0.1.0.tar.gz <../dist/ivctrack-0.1.0.tar.gz>`
 
 Source repository: `Bitbucket <https://bitbucket.org/odebeir/ivctrack/>`_
 
