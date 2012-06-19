@@ -4,11 +4,43 @@ Examples
 
 .. note:: under construction
 
+.. ipython::
+    :suppress:
+
+    In [4]: import sys
+    In [5]: sys.path.append('..')
+
 Browse the input source
 -----------------------------
 
-Set initial marks
+The following example illustrates how to access frame sequence contained inside a simple .zip file, each individual
+image is named exp0001.zip , exp0002.zip etc.
+
+.. ipython::
+
+    In [9]: datazip_filename = '../test/data/seq0_extract.zip'
+
+    In [11]: from ivctrack.reader import ZipSource,Reader
+
+    In [12]: reader = Reader(ZipSource(datazip_filename))
+
+    In [13]: reader.getframe()
+
+    In [15]: reader.moveto(1)
+
+
+
+Read marks from .CSV file
 -----------------------------
+
+.. ipython::
+
+    In [6]: from ivctrack.cellmodel import import_marks
+
+    In [7]: marks = import_marks('../test/data/fwd_marks.csv')
+
+    In [8]: marks
+
 
 Track a sequence
 -----------------------------
@@ -94,4 +126,5 @@ example
    # use a semicolon to suppress the output
    @savefig hist_simple.png width=4in
    In [151]: hist(numpy.random.randn(10000), 100);
+
 
