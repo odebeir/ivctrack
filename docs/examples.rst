@@ -2,14 +2,24 @@
 Examples
 ===========
 
-Reading benchmark
+.. note:: under construction
+
+Display of the input source
 -----------------------------
 
-Tracking benchmark
+Set initial marks
 -----------------------------
 
+Track a sequence
+-----------------------------
 
-Tracking movie
+Import HDF5 data
+-----------------------------
+
+Plot trajectories
+-----------------------------
+
+Extract statistics
 -----------------------------
 
 

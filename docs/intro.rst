@@ -7,6 +7,8 @@ Setup requirement
 Some dependencies are needed in order to run ivctrack programs.
 Basically for the tracking itself, numpy and scipy are used (including weave inline C-compilation function).
 
+It uses also `h5py <http://code.google.com/p/h5py/>`_ for recording the tracks into one single HDF5 file.
+
 For some examples, `matplotlib <http://matplotlib.sourceforge.net/index.html>`_ is used.
 
 For some graphical user interfaces, `chaco <http://code.enthought.com/projects/chaco/>`_
