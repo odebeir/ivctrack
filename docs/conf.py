@@ -62,7 +62,7 @@ except subprocess.CalledProcessError:
 print 'found ',git_describe
 
 #this allows to incorpore version from source code
-from pyrankfilter import __version__
+from ivctrack import __version__
 
 # The short X.Y version.
 version = 'v'+__version__
