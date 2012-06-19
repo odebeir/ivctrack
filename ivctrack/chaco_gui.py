@@ -122,18 +122,20 @@ class ScatterPlotTraits(HasTraits):
         self.paramsUI.set(params)
         self.paramsUI.on_trait_event(self.update_param)
 
-        x = npy.linspace(-6.28, 6.28, 100)
-        y = npy.sin(x)
-
-        self.plotdata = ArrayPlotData(x = x, y = y , imagedata = self.reader.getframe(),x0=[self.x0],y0=[self.y0],
-                                        xc=[self.x0],yc=[self.y0],x_path=[self.x0],y_path=[self.y0])
+        self.plotdata = ArrayPlotData(xh=npy.zeros((1,)),yh=npy.zeros((1,)),
+                                    xs=npy.zeros((1,)),ys=npy.zeros((1,)),
+                                    imagedata=self.reader.getframe(),
+                                    x0=[self.x0],y0=[self.y0],
+                                    xc=[self.x0],yc=[self.y0],
+                                    x_path=[self.x0],y_path=[self.y0])
 
         plot = Plot(self.plotdata)
         plot.img_plot("imagedata",colormap=gray) #, colormap=jet
         plot.plot(("x0", "y0"), type="scatter", color="red",marker='triangle')
         plot.plot(("xc", "yc"), type="scatter", color="yellow")
         plot.plot(("x_path", "y_path"), type="line", color="green",marker='circle')
-        self.renderer = plot.plot(("x", "y"), type="scatter", color="blue",marker='circle')[0]
+        plot.plot(("xh", "yh"), type="scatter", color="blue",marker='circle')
+        plot.plot(("xs", "ys"), type="scatter", color="white",marker='circle',size=5)
 
         self.plot = plot
 
@@ -161,9 +163,12 @@ class ScatterPlotTraits(HasTraits):
     def cell_update(self):
         self.cell.update(self.reader.getframe())
         halo = npy.asarray([sh[0:2] for sh in self.cell.shift_halo])
+        soma = npy.asarray([sh[0:2] for sh in self.cell.shift_soma])
         try:
-            self.plotdata.set_data('x', halo[:,0])
-            self.plotdata.set_data('y', halo[:,1])
+            self.plotdata.set_data('xh', halo[:,0])
+            self.plotdata.set_data('yh', halo[:,1])
+            self.plotdata.set_data('xs', soma[:,0])
+            self.plotdata.set_data('ys', soma[:,1])
             self.plotdata.set_data('xc', [self.cell.center[0]])
             self.plotdata.set_data('yc', [self.cell.center[1]])
             self.plotdata.set_data('x_path', self.cell.path[:,0])
@@ -191,6 +196,7 @@ class ScatterPlotTraits(HasTraits):
 
 
 if __name__ == "__main__":
+
 
     datazip_filename = '../test/data/seq0_extract.zip'
     reader = Reader(ZipSource(datazip_filename))
