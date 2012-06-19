@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 '''
-Performance test for different tasks
+Performance test for image access and cell tracking
 '''
-__author__ = 'Olivier Debeir'
+__author__ = 'Copyright (C) 2012, Olivier Debeir <odebeir@ulb.ac.be>'
 
 
 from ivctrack.reader import ZipSource
@@ -16,16 +16,16 @@ def benchmark_access():
     """
 
     @timeit
-    def process():
+    def access():
 
-        datazip = '../test/data/seq0.zip'
+        datazip = '../test/data/seq0_extract.zip'
         reader = ZipSource(datazip)
         g = reader.generator()
 
         for i,im in enumerate(g):
             pass
-        print i,im.shape
-    process()
+        print '#frames:',i,' frame size:',im[1].shape
+    access()
 
 def benchmark_process():
     """Test function: evaluate the computation time for cell tracking
@@ -33,7 +33,7 @@ def benchmark_process():
     @timeit
     def process():
 
-        datazip = '../test/data/seq0.zip'
+        datazip = '../test/data/seq0_extract.zip'
         reader = ZipSource(datazip)
         g = reader.generator()
 
@@ -44,8 +44,8 @@ def benchmark_process():
 
         for i,im in enumerate(g):
             for c in cell_list:
-                c.update(im)
-        print i,'#cells:',len(cell_list)
+                c.update(im[1])
+        print '#frames:',i,' #cells:',len(cell_list)
     process()
 
 if __name__ == "__main__":

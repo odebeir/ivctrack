@@ -7,7 +7,7 @@ Track cells using
 * Integral shift (todo)
 
 '''
-__author__ = 'Olivier Debeir'
+__author__ = 'Copyright (C) 2012, Olivier Debeir <odebeir@ulb.ac.be>'
 
 import os
 import matplotlib.pyplot as plt

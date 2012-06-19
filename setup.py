@@ -18,7 +18,7 @@ setup(
     description='2D in-vitro cell tracking',
     author='Olivier Debeir',
     author_email='odebeir@ulb.ac.be',
-    url='https://odebeir@bitbucket.org/odebeir/icvtrack.git',
+    url='https://odebeir@bitbucket.org/odebeir/ivctrack.git',
     keywords = ["image processing", "tracking", "numpy"],
 
     classifiers = [

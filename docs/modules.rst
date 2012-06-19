@@ -43,3 +43,14 @@ Player module
 .. automodule:: ivctrack.player
    :members:
    :undoc-members:
+
+Test modules
+-----------------------------
+
+.. automodule:: test.benchmark
+   :members:
+   :undoc-members:
+
+.. automodule:: test.test_model
+   :members:
+   :undoc-members:

@@ -3,11 +3,28 @@
    You can adapt this file completely to your liking, but it should at least
    contain the root `toctree` directive.
 
-Welcome to ivctrack's documentation!
+Welcome to *ivctrack*'s documentation.
 ======================================
 
-.. plot:: code/ex0.py
-    :width: 100%
+.. figure:: image/screenshot1.png
+    :scale: 70 %
+    :alt: in vitro cell tracking
+    :align: right
+    :figwidth: 45%
+
+    Example of the tracking model adjusted on a cell observed under phase contrast microscopy.
+
+IVCTRACK stands for in vitro cell tracking toolbox.
+
+This documentation support a set of python programs dedicated to in vitro cell tracking. More specifically for
+tracking cell seeded on 2D containers and observed under classical phase contrast microscopy.
+
+In vitro cell tracking is one tool for cell motility observation both qualitatively and quantitatively.
+
+The implemented method presented here is a tentative of python porting of previous code written for Matlab. This method
+was used in several publications for cell speed measurement [deb05]_ and cell chemotactism analysis [deb04]_ .
+
+This project is published under GPL v3 license.
 
 Contents:
 
@@ -15,9 +32,10 @@ Contents:
    :maxdepth: 2
 
    intro.rst
-   modules.rst
    examples.rst
-
+   modules.rst
+   references.rst
+   about.rst
 
 
 Indices and tables

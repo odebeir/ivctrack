@@ -47,7 +47,8 @@ html:
 	@echo
 	@echo "Build finished. The HTML pages are in $(BUILDDIR)/html."
 	pwd
-	cp code/*.py _build/html/code
+	mkdir -p $(BUILDDIR)/html/code
+	cp code/*.py $(BUILDDIR)/html/code
 
 dirhtml:
 	$(SPHINXBUILD) -b dirhtml $(ALLSPHINXOPTS) $(BUILDDIR)/dirhtml
