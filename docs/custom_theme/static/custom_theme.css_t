@@ -1,0 +1,6 @@
+@import url("agogo.css");
+
+table,td,th  {
+    border-width:0px;
+    background-color: rgb(255, 255, 240);
+}

@@ -65,44 +65,30 @@ Video example :
 
 ==========================================================================
 
+Content
+===========
 
-Contents
-==================
+.. list-table::
+   :widths: 100 200 200
+   :header-rows: 0
 
-.. toctree::
-   :maxdepth: 2
+   * - .. toctree::
+          :maxdepth: 2
 
-   intro.rst
-   install.rst
-   examples.rst
-   modules.rst
-   references.rst
-   about.rst
+          intro.rst
+          install.rst
+          about.rst
+     - .. toctree::
+          :maxdepth: 2
 
+          examples.rst
+     - .. toctree::
+          :maxdepth: 2
 
-Indices and tables
-==================
-
-* :ref:`genindex`
-* :ref:`modindex`
-* :ref:`search`
-
-.. list-table:: Frozen Delights!
-   :widths: 15 10 30
-   :header-rows: 1
-
-   * - Treat
-     - Quantity
-     - Description
-   * - Albatross
-     - 2.99
-     - * :ref:`genindex`
-       * hop
-       * hip
-   * - Crunchy Frog
-     - 1.49
-     - If we took the bones out, it wouldn't be
-       crunchy, now would it?
-   * - Gannet Ripple
-     - 1.99
-     - On a stick!
+          modules.rst
+          references.rst
+   * - * :ref:`genindex`
+       * :ref:`modindex`
+       * :ref:`search`
+     -
+     -
