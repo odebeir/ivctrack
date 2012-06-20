@@ -24,6 +24,8 @@ In vitro cell tracking is one tool for cell motility observation both qualitativ
 The implemented method presented here is a tentative of python porting of previous code written for Matlab. This method
 was used in several publications for cell speed measurement [deb05]_ and cell chemotactism analysis [deb04]_ .
 
+License
+==================
 
 This project is published under GPL v3 license.
 
@@ -37,6 +39,20 @@ Features
 * both forward and reverse tracking
 
 * results saved into a single HDF5 per sequence
+
+Roadmap
+==================
+
+* stabilizing a first version, with a basic documentation, adding more examples
+
+* developing a second tracking model which take into account possible cell shape changes (adaptive model)
+
+* testing a meanshift based on integral image
+
+* developing GUIs for cell marking, interactive result visualization
+
+* adding statistical trajectory analysis
+
 
 ==========================================================================
 
@@ -71,3 +87,22 @@ Indices and tables
 * :ref:`modindex`
 * :ref:`search`
 
+.. list-table:: Frozen Delights!
+   :widths: 15 10 30
+   :header-rows: 1
+
+   * - Treat
+     - Quantity
+     - Description
+   * - Albatross
+     - 2.99
+     - * :ref:`genindex`
+       * hop
+       * hip
+   * - Crunchy Frog
+     - 1.49
+     - If we took the bones out, it wouldn't be
+       crunchy, now would it?
+   * - Gannet Ripple
+     - 1.99
+     - On a stick!

@@ -15,7 +15,7 @@ For some graphical user interfaces, `chaco <http://code.enthought.com/projects/c
 and
 `traits <http://docs.enthought.com/traitsui/traitsui_user_manual/index.html>`_ are required.
 
-Fo some test functions `mencoder <http://www.mplayerhq.hu/design7/news.html>`_ is used to make a movie from separate .png files.
+Anecdotally,  functions `mencoder <http://www.mplayerhq.hu/design7/news.html>`_ is used to make a movie from separate .png files.
 
 
 Download
