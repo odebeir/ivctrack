@@ -7,6 +7,8 @@ Update cell position
 
     In [32]: from ivctrack.cellmodel import Cell
 
+    In [9]: datazip_filename = '../test/data/seq0_extract.zip'
+
     In [29]: reader = Reader(ZipSource(datazip_filename))
 
     In [30]: ima = reader.getframe()

@@ -49,26 +49,28 @@ def get_hdf5_info(filename):
     print '*'*80
     rec_print(fid)
 
-def get_hdf5_tracks(filename):
-    """returns a list of numpy arrays such as:
-    [[frame0,x0,y0], [frame1,x1,y1], ...
-    first column contains the actual tracking frame
+def get_hdf5_data(filename,fields=['center']):
+    """returns
+     and a list of dict: one per track
+    'frames' : [frame0...last_frame]
+    'field1' : numpy array, ...
     """
     fid = h5py.File(filename, 'r')
     tracks = fid['tracks']
-    trajectories = []
+    data = []
     for k in tracks:
+        t_data = {}
         frame_range = tracks[k].attrs['frame_range']
-        center = tracks[k]['center']
-        frames = npy.arange(frame_range[0],frame_range[1]+1)
-        trajectory = npy.hstack((frames[:,npy.newaxis],center))
-        trajectories.append(trajectory)
-    return trajectories
+        t_data['frames'] = npy.arange(frame_range[0],frame_range[1]+1)[:,npy.newaxis]
+        for f in fields:
+            t_data[f] = tracks[k][f][:]
+        data.append(t_data)
+    return data
 
 if __name__ == "__main__":
 
     get_hdf5_info('../test/temp/test.hdf5')
-    trajectories = get_hdf5_tracks('../test/temp/test.hdf5')
-    print trajectories
+    data = get_hdf5_data('../test/temp/test.hdf5',fields=['center','halo'])
+    print data
 
 
