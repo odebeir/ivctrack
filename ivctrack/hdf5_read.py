@@ -30,18 +30,45 @@ import csv
 #specific import
 import h5py
 
+def rec_print(d,level=0):
+    """recursive dict print
+    """
+    try:
+        for k, v in d.iteritems():
+            print '\t'*level,k,v
+            rec_print(v,level=level+1)
+    except AttributeError:
+        pass
+
 def get_hdf5_info(filename):
     """returns basic information from the HDF5 structure
     """
     fid = h5py.File(filename, 'r')
-    print fid
-    for g in fid:
-        print g
+    print '*'*80
+    print 'HDF5 info: ',filename
+    print '*'*80
+    rec_print(fid)
 
-
+def get_hdf5_tracks(filename):
+    """returns a list of numpy arrays such as:
+    [[frame0,x0,y0], [frame1,x1,y1], ...
+    first column contains the actual tracking frame
+    """
+    fid = h5py.File(filename, 'r')
+    tracks = fid['tracks']
+    trajectories = []
+    for k in tracks:
+        frame_range = tracks[k].attrs['frame_range']
+        center = tracks[k]['center']
+        frames = npy.arange(frame_range[0],frame_range[1]+1)
+        trajectory = npy.hstack((frames[:,npy.newaxis],center))
+        trajectories.append(trajectory)
+    return trajectories
 
 if __name__ == "__main__":
 
     get_hdf5_info('../test/temp/test.hdf5')
+    trajectories = get_hdf5_tracks('../test/temp/test.hdf5')
+    print trajectories
 
 
