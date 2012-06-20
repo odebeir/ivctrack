@@ -38,7 +38,7 @@ def rec_print(d,level=0):
             print '\t'*level,k,v
             rec_print(v,level=level+1)
     except AttributeError:
-        pass
+        print '\t'*level,d.attrs['features']
 
 def get_hdf5_info(filename):
     """returns basic information from the HDF5 structure
@@ -58,14 +58,21 @@ def get_hdf5_data(filename,fields=['center']):
     fid = h5py.File(filename, 'r')
     tracks = fid['tracks']
     data = []
+    first = True
     for k in tracks:
         t_data = {}
         frame_range = tracks[k].attrs['frame_range']
         t_data['frames'] = npy.arange(frame_range[0],frame_range[1]+1)[:,npy.newaxis]
+        if first:
+            features = {}
+            for f in fields:
+                features[f] = list(tracks[k][f].attrs['features'])
+            first = False
         for f in fields:
             t_data[f] = tracks[k][f][:]
+
         data.append(t_data)
-    return data
+    return features,data
 
 if __name__ == "__main__":
 

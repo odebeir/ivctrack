@@ -9,7 +9,7 @@ Plot the trajectories saved in an HDF5 file
 
     In [41]: import matplotlib.pyplot as plt
 
-    In [9]: data = get_hdf5_data('../test/temp/test.hdf5')
+    In [9]: feat,data = get_hdf5_data('../test/temp/test.hdf5')
 
     In [40]: plt.figure()
 
@@ -32,7 +32,7 @@ Plot the x position with respect to the frame number
 
     In [41]: import matplotlib.pyplot as plt
 
-    In [9]: data = get_hdf5_data('../test/temp/test.hdf5')
+    In [9]: feat,data = get_hdf5_data('../test/temp/test.hdf5')
 
     In [40]: plt.figure()
 
@@ -56,7 +56,7 @@ Plot the trajectories relatively to there origin
 
     In [41]: import matplotlib.pyplot as plt
 
-    In [9]: data = get_hdf5_data('../test/temp/test.hdf5')
+    In [9]: feat,data = get_hdf5_data('../test/temp/test.hdf5')
 
     In [40]: plt.figure()
 
@@ -83,7 +83,10 @@ Extract cell shape from HDF5 file
 
     In [41]: import matplotlib.pyplot as plt
 
-    In [9]: data = get_hdf5_data('../test/temp/test.hdf5',fields=['center','halo','soma'])
+    In [9]: feat,data = get_hdf5_data('../test/temp/test.hdf5',fields=['center','halo','soma'])
+
+    In [99]: for k,f in feat.iteritems():
+       ....:     print k,f
 
     In [40]: plt.figure()
 
@@ -119,7 +122,7 @@ Fill the background with phase contrast image
 
     In [13]: bg = reader.getframe()
 
-    In [9]: data = get_hdf5_data('../test/temp/test.hdf5',fields=['center','halo','soma'])
+    In [9]: feat,data = get_hdf5_data('../test/temp/test.hdf5',fields=['center','halo','soma'])
 
     In [40]: plt.figure()
 

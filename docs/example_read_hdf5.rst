@@ -17,7 +17,7 @@ Extract the x,y position of all the tracks
 
     In [41]: import matplotlib.pyplot as plt
 
-    In [9]: data = get_hdf5_data('../test/temp/test.hdf5',fields=['center'])
+    In [9]: feat,data = get_hdf5_data('../test/temp/test.hdf5',fields=['center'])
 
     In [40]: plt.figure()
 
@@ -40,7 +40,7 @@ Extract cell shape from HDF5 file
 
     In [41]: import matplotlib.pyplot as plt
 
-    In [9]: data = get_hdf5_data('../test/temp/test.hdf5',fields=['center','halo','soma'])
+    In [9]: feat,data = get_hdf5_data('../test/temp/test.hdf5',fields=['center','halo','soma'])
 
     In [39]: for d in data:
        ....:     h = d['halo']
