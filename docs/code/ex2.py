@@ -7,4 +7,4 @@ import numpy as npy
 import context
 from test import test_N
 
-test_N()
+test_N(n_list=[8])

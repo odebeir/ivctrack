@@ -254,7 +254,7 @@ def test_experiment():
     experiment = Experiment(reader,exp_name='Test')
 
     #mark initial cell position (may be in the middle of the sequence
-    marks = import_marks('../test/data/fwd_marks.csv')
+    marks = import_marks('../test/data/rev_marks.csv')
     params = {'N':8,'radius_halo':20,'radius_soma':12,'exp_halo':10,'exp_soma':2,'niter':10,'alpha':.75}
 
     track_list = []
@@ -267,7 +267,7 @@ def test_experiment():
     experiment.do_tracking('fwd')
 
     #save data to file
-    experiment.save_hdf5('../test/temp/test.hdf5')
+    experiment.save_hdf5('../test/temp/test_rev.hdf5')
 
 if __name__ == "__main__":
 

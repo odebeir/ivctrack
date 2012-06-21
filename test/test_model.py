@@ -85,12 +85,12 @@ def test_static():
 
     plt.show()
 
-def test_N():
+def test_N(n_list=[3,5,8,16,32]):
     """Test function: illustrate the N parameter (#of pies of the model)
     """
     im = imread(os.path.join(os.path.dirname(__file__),'../test/data/exp0001.jpg'))
     cellLocations = [(340,190),(474,331),(120,231)]
-    for N in [3,5,8,16,32]:
+    for N in n_list:
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.imshow(im, interpolation='nearest')

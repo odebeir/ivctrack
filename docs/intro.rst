@@ -32,6 +32,13 @@ The method developed in this toolbox is a little bit different from these descri
 to the shape of the inner triangles which are put in a reversed direction. This option gives better results for the soma
 detection.
 
+The following figure illustrate how the space around a cell is decomposed into pies (N=8). Large pies are in charge of
+finding the halo, smaller inner pies are responsible for the soma.
+
+.. plot:: code/ex2.py
+
+
+
 Implementation
 ------------------
 

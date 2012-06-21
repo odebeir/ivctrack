@@ -61,3 +61,5 @@ Some test data can be downloaded here:
 * :download:`some marks for the last sequence frame (.CSV) <../test/data/rev_marks.csv>`
 
 * :download:`small zipped phase contrast sequence (30 frames) (.ZIP) <../test/data/seq0_extract.zip>`
+
+* :download:`HDF5 test file (31 cells/30 frames) (.HDF5) <../test/data/test_rev.hdf5>`
