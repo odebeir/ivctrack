@@ -19,6 +19,7 @@ Examples
     example_experiment.rst
     example_read_hdf5.rst
     example_plot.rst
+    example_measure.rst
 
 
 
