@@ -23,6 +23,8 @@ Download
 
 Getting the distribution:
 
+* download the distribution file :download:`ivctrack-0.1.1.tar.gz <../dist/ivctrack-0.1.1.tar.gz>`
+
 * download the distribution file :download:`ivctrack-0.1.0.tar.gz <../dist/ivctrack-0.1.0.tar.gz>`
 
 * from the source repository: `Bitbucket <https://bitbucket.org/odebeir/ivctrack/>`_
