@@ -157,7 +157,6 @@ def hurst_curv_exponent(xy):
         c_length = k+1
         data[k,:] = (c_length,npy.mean(kd))
 
-
     #linear fit in log-log
     x = npy.log(data[:,0])
     y = npy.log(data[:,1])
@@ -170,6 +169,33 @@ def hurst_curv_exponent(xy):
     #    plt.legend()
     #    plt.show()
     return m
+
+def relative_direction_distribution(xy):
+    """computes instanteneous directions and make an histogram centered on previous direction
+    """
+    dxy = xy[1:,:]-xy[0:-1,:]
+    theta = npy.arctan2(dxy[:,0],dxy[:,1])
+    rho = npy.sqrt(npy.sum(dxy**2,axis=1))
+    dtheta = theta[1:]-theta[0:-1]
+    dtheta[dtheta>6.28] = dtheta[dtheta>6.28] - 6.28
+    dtheta[dtheta<-6.28] = dtheta[dtheta<-6.28] + 6.28
+
+    dtheta = npy.hstack(([0],dtheta))
+    #resulting direction
+    dx = npy.sum(rho * npy.cos(dtheta))
+    dy = npy.sum(rho * npy.sin(dtheta))
+
+    print dx,dy,rho[0],dtheta[0]
+
+    theta_r = npy.arctan2(dy,dx)
+    rho_r = npy.sqrt(dx**2+dy**2)
+
+    import matplotlib.pyplot as plt
+    plt.figure()
+    plt.polar(dtheta,rho, 'ro')
+    plt.polar(theta_r,rho_r, 'bo')
+    plt.show()
+    return 0
 #----------------------------------------------------------------------------------------------
 
 def speed_feature_extraction(hdf5_filename):
@@ -197,7 +223,9 @@ def direction_feature_extraction(hdf5_filename):
         xy = d['center']
         se,se_err = scaling_exponent(xy)
 #        hurst_c = hurst_curv_exponent(xy)
+        relative_direction_distribution(xy)
         measures.append((se,se_err))
+
     measures = npy.asarray(measures)
 
     return (feat_name,measures)
@@ -238,5 +266,5 @@ if __name__=='__main__':
         plt.plot(xy[:,0]-x0+offset_x,xy[:,1]-y0+offset_y)
 #        plt.text(xy[0,0]-x0+offset_x,xy[0,1]-y0+offset_y,'%.3f(%.3f)'%(d_data[r,0],d_data[r,1]))
 
-    plt.show()
+#    plt.show()
 
