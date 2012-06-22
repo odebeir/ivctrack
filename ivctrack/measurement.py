@@ -26,6 +26,7 @@ from hdf5_read import get_hdf5_data
 from quickhull2d import qhull
 from scipy.spatial.distance import pdist,squareform
 from scipy.stats import linregress
+
 #-------SPEED---------------------------------------------------------------------------------------
 def inst_speed(xy):
     s = npy.sqrt(npy.sum(npy.diff(xy,axis=0)**2,axis=1))
@@ -35,20 +36,44 @@ def path_length(xy):
     return npy.sum(inst_speed(xy))
 
 def avg_speed(xy):
+    """
+    >>> xy = npy.asarray([[0,0],[0,1],[1,1],[1,0]])
+    >>> print avg_speed(xy)
+    0.75
+    """
     return path_length(xy)/xy.shape[0]
 
 def mrdo_speed(xy):
+    """
+    >>> xy = npy.asarray([[0,0],[0,1],[1,1],[1,0]])
+    >>> print mrdo_speed(xy)
+    0.353553390593
+    """
     xy0 = xy[0,:]
     d = npy.sqrt(npy.sum((xy-xy0)**2,axis=1))
     d_max = npy.max(d)
     return d_max/xy.shape[0]
 
 def area_of_triangle(p1, p2, p3):
-    '''calculate area of any triangle given co-ordinates of the corners'''
+    '''calculate area of any triangle given co-ordinates of the corners
+
+    >>> p1 = npy.asarray([0,0])
+    >>> p2 = npy.asarray([1,0])
+    >>> p3 = npy.asarray([1,1])
+    >>> print area_of_triangle(p1,p2,p3)
+    0.5
+    '''
+
     return npy.linalg.norm(npy.cross((p2 - p1), (p3 - p1)))/2.
 
 def hull_speed(xy):
+    """
+    >>> xy = npy.asarray([[0,0],[0,1],[1,1],[1,0]])
+    >>> print hull_speed(xy)
+    (0.25, 0.35355339059327379)
+    """
     hull_xy = qhull(xy)
+    #max dist inside hull
     d = pdist(hull_xy, 'euclidean')
     dmax_idx = npy.argmax(d)
     #hull_surf
@@ -95,7 +120,7 @@ def scaling_exponent(xy):
     d = squareform(pdist(xy, 'sqeuclidean'))
 
     #max number of successive positions
-    N = 10
+    N = 15
     data = npy.zeros((N,2))
 
     for k in range(N):
@@ -108,7 +133,7 @@ def scaling_exponent(xy):
     y = npy.log(data[:,1])
     slope, intercept, r_value, p_value, std_err = linregress(x,y)
 
-    print slope, r_value, std_err
+#    print slope, r_value, std_err
 #    fig = plt.figure()
 #    ax = fig.add_subplot(111, aspect='equal')
 ##    plt.plot(data[:,0],data[:,1])
@@ -180,7 +205,9 @@ def direction_feature_extraction(hdf5_filename):
 
 if __name__=='__main__':
 
-    import matplotlib.pyplot as plt
+    import doctest
+
+    print doctest.testmod()
 
     hdf5_filename = '../test/data/test_rev.hdf5'
 
@@ -192,6 +219,9 @@ if __name__=='__main__':
 
     d_feat,d_data = direction_feature_extraction(hdf5_filename)
     print d_feat
+    print d_data
+
+    import matplotlib.pyplot as plt
 
     fig = plt.figure()
     ax = fig.add_subplot(111, aspect='equal')

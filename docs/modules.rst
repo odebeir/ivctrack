@@ -61,3 +61,10 @@ GUI modules
 .. automodule:: ivctrack.chaco_gui
    :members:
    :undoc-members:
+
+Measurement module
+-----------------------------
+
+.. automodule:: ivctrack.measurement
+   :members:
+   :undoc-members:
