@@ -19,12 +19,18 @@ Cell speed analysis : average speed, MRDO and hull speed :
 
     In [31]: plt.scatter(data[:,1],data[:,3])
 
+    In [31]: plt.xlabel('avg speed')
+
+    In [31]: plt.ylabel('hull speed')
+
     @savefig plot_measure1.png width=4in
     In [34]: plt.draw()
 
     In [34]: plt.figure()
 
-    In [31]: plt.hist(data[:,2:4])
+    In [31]: plt.hist(data[:,1:4])
+
+    In [31]: plt.legend(['avg','mrdo','hull speed'])
 
     @savefig plot_measure2.png width=4in
     In [34]: plt.draw()

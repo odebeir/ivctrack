@@ -40,6 +40,8 @@ Features
 
 * results saved into a single HDF5 per sequence
 
+* speed statistics
+
 Roadmap
 ==================
 

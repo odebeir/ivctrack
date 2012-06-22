@@ -16,4 +16,6 @@ License
 
 .. include:: ../LICENSE
 
-
+External code
+----------------
+Quickhull algorithm is retrieved from: `Quickhull <http://en.literateprograms.org/Quickhull_(Python,_arrays)?oldid=16555>`_
