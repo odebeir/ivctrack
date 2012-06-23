@@ -171,29 +171,49 @@ def hurst_curv_exponent(xy):
     return m
 
 def relative_direction_distribution(xy):
-    """computes instanteneous directions and make an histogram centered on previous direction
+    """computes instantaneous directions and make an histogram centered on previous direction
     """
     dxy = xy[1:,:]-xy[0:-1,:]
     theta = npy.arctan2(dxy[:,0],dxy[:,1])
     rho = npy.sqrt(npy.sum(dxy**2,axis=1))
     dtheta = theta[1:]-theta[0:-1]
-    dtheta[dtheta>6.28] = dtheta[dtheta>6.28] - 6.28
-    dtheta[dtheta<-6.28] = dtheta[dtheta<-6.28] + 6.28
-
     dtheta = npy.hstack(([0],dtheta))
+    clip_dtheta = dtheta.copy()
+    clip_dtheta[dtheta>npy.pi] = dtheta[dtheta>npy.pi] - npy.pi
+    clip_dtheta[dtheta<-npy.pi] = dtheta[dtheta<-npy.pi] + npy.pi
+
+    N = 8
+    width = 2*npy.pi/N
+    offset_th = .5*width
+    bins = npy.linspace(-npy.pi-offset_th,npy.pi+offset_th,N+2,endpoint=True)
+    print 'bins',bins
+    h_theta,bin_theta = npy.histogram(clip_dtheta,bins=bins,weights=rho)
+    print 'h',h_theta
+
+    h_theta[0]+=h_theta[-1]
+
+    dx = rho*npy.cos(dtheta)
+    dy = rho*npy.sin(dtheta)
+
+
     #resulting direction
-    dx = npy.sum(rho * npy.cos(dtheta))
-    dy = npy.sum(rho * npy.sin(dtheta))
-
-    print dx,dy,rho[0],dtheta[0]
-
-    theta_r = npy.arctan2(dy,dx)
-    rho_r = npy.sqrt(dx**2+dy**2)
+#    tot_theta = npy.arctan2(tot_dxy[0],tot_dxy[1])
+#    tot_rho = npy.sqrt(npy.sum(tot_dxy**2))
 
     import matplotlib.pyplot as plt
-    plt.figure()
-    plt.polar(dtheta,rho, 'ro')
-    plt.polar(theta_r,rho_r, 'bo')
+    fig=plt.figure()
+    ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
+#    ax.bar(bin_theta[0:-1], npy.ones_like(bin_theta[0:-1]), width=width, bottom=0.0,alpha=.5)
+    ax.bar(bin_theta[0:-2], h_theta[:-1], width=width, bottom=0.0)
+#    plt.plot(h[0])
+#    plt.plot(dx,dy)
+    plt.polar(clip_dtheta,rho, 'ro')
+#    plt.polar(dtheta,rho+.1, 'bo')
+#    plt.hist(dtheta)
+#    plt.figure()
+#    plt.hist(clip_dtheta)
+#    plt.polar(tot_theta,tot_rho, 'bo')
+
     plt.show()
     return 0
 #----------------------------------------------------------------------------------------------
