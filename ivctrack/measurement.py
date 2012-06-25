@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 '''Trajectory feature extraction
+.. note:: matplotlib dependency for plotting if needed
 '''
 __author__ = 'Copyright (C) 2012, Olivier Debeir <odebeir@ulb.ac.be>'
 __license__ ="""
@@ -77,6 +78,8 @@ def hull_speed(xy):
     #max dist inside hull
     d = pdist(hull_xy, 'euclidean')
     dmax_idx = npy.argmax(d)
+    #total length
+    tot_length = npy.sum(npy.diag(squareform(d),1))
     #hull_surf
     p3 = npy.mean(hull_xy,axis=0)
     n_hull = hull_xy.shape[0]
@@ -87,7 +90,7 @@ def hull_speed(xy):
         a = area_of_triangle(p1,p2,p3)
         hull_surf += a
 
-    return (hull_surf/xy.shape[0],d[dmax_idx]/xy.shape[0])
+    return (hull_surf/xy.shape[0],d[dmax_idx]/xy.shape[0],hull_surf/tot_length**2,d[dmax_idx]/tot_length)
 
 def plot_hull_speed(xy):
     import matplotlib.pyplot as plt
@@ -113,7 +116,7 @@ def plot_hull_speed(xy):
     return 0
 
 #-------DIRECTION---------------------------------------------------------------------------------------
-def scaling_exponent(xy,verbose=False):
+def scaling_exponent(xy,verbose=True):
     """computes the Hurst coefficient which qualify how the trajectory is persistent in time
     it is related to the fractal dimension of the trajectory
     """
@@ -140,7 +143,7 @@ def scaling_exponent(xy,verbose=False):
         fig = plt.figure()
         ax = fig.add_subplot(111, aspect='equal')
         plt.plot(x,y,label='distance')
-        plt.plot(x,slope*x+intercept,label='lin.fit $r=%.3f$'%r_value)
+        plt.plot(x,slope*x+intercept,label='lin.fit $r^2=%.3f$'%r_value**2)
         plt.legend()
         plt.xlabel('$H=%.3f$'%slope)
         plt.show()
@@ -194,7 +197,7 @@ def filter(xy,sigma):
     fxy = gaussian_filter1d(xy,sigma=sigma,axis=0,mode='nearest')
     return fxy
 
-def relative_direction_distribution(xy,verbose=True):
+def relative_direction_distribution(xy,verbose=False):
     """computes instantaneous directions and make an histogram centered on previous direction
     """
     dxy = xy[1:,:]-xy[0:-1,:]
@@ -248,15 +251,15 @@ def speed_feature_extraction(c_data):
     """compute speed feature from a list of dict {'frames','center'}
     """
     measures = []
-    feat_name = ['path_length','avg_speed','mrdo','hull_surf','hull_dist']
+    feat_name = ['path_length','avg_speed','mrdo','hull_surf','hull_dist','hull_density','hull_drel']
     for d in c_data:
         xy = d['center']
         fxy = filter(xy,sigma=1.)
         pl = path_length(fxy)
         avg = avg_speed(fxy)
         mrdo = mrdo_speed(fxy)
-        hull_surf, hull_d = hull_speed(fxy)
-        measures.append((pl,avg,mrdo,hull_surf,hull_d))
+        hull_surf, hull_d , hull_density, hull_drel= hull_speed(fxy)
+        measures.append((pl,avg,mrdo,hull_surf,hull_d,hull_density,hull_drel))
     measures = npy.asarray(measures)
 
     return (feat_name,measures)
@@ -285,18 +288,21 @@ if __name__=='__main__':
 
     print doctest.testmod()
 
+    #extract center data from HDF5
     hdf5_filename = '../test/data/test_rev.hdf5'
-
     c_feat,c_data = get_hdf5_data(hdf5_filename,fields=['center'])
 
+    #compute speed features
     s_feat,s_data = speed_feature_extraction(c_data)
     print s_feat
     print s_data
 
+    #compute directional features
     d_feat,d_data = direction_feature_extraction(c_data)
     print d_feat
     print d_data
 
+    #plot data
     import matplotlib.pyplot as plt
 
     fig = plt.figure()
@@ -307,15 +313,15 @@ if __name__=='__main__':
         p_length = s_data[r,0]
         x0 = xy[0,0]
         y0 = xy[0,1]
-#        offset_x = s_data[r,4]*1000
+        offset_x = s_data[r,6]*10000
 #        offset_x = p_length*10
 #        offset_x = s_data[r,3]*100
-        offset_x = d_data[r,3]*10
-        offset_y = d_data[r,2]*1000
+#        offset_x = d_data[r,3]*10
+        offset_y = d_data[r,3]*10
         plt.plot(xy[:,0]-x0+offset_x,xy[:,1]-y0+offset_y)
         fxy = filter(xy,sigma=1.)
         plt.plot(fxy[:,0]-x0+offset_x,fxy[:,1]-y0+offset_y)
-        plt.plot(offset_x,offset_y,'o')
+        plt.plot(offset_x,offset_y,'+k')
 #        plt.text(xy[0,0]-x0+offset_x,xy[0,1]-y0+offset_y,'%.3f(%.3f)'%(d_data[r,0],d_data[r,1]))
 
     plt.show()
