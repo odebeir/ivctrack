@@ -237,12 +237,11 @@ def relative_direction_distribution(xy):
 
 #----------------------------------------------------------------------------------------------
 
-def speed_feature_extraction(hdf5_filename):
+def speed_feature_extraction(c_data):
 
-    features,data = get_hdf5_data(hdf5_filename,fields=['center'])
     measures = []
     feat_name = ['path_length','avg_speed','mrdo','hull_surf','hull_dist']
-    for d in data:
+    for d in c_data:
         xy = d['center']
         fxy = filter(xy,sigma=1.)
         pl = path_length(fxy)
@@ -254,12 +253,11 @@ def speed_feature_extraction(hdf5_filename):
 
     return (feat_name,measures)
 
-def direction_feature_extraction(hdf5_filename):
+def direction_feature_extraction(c_data):
 
-    features,data = get_hdf5_data(hdf5_filename,fields=['center'])
     measures = []
     feat_name = ['scaling_exponent','scaling_exponent_r2','R','Rtot']
-    for d in data:
+    for d in c_data:
         xy = d['center']
         fxy = filter(xy,sigma=1.)
 
@@ -282,11 +280,11 @@ if __name__=='__main__':
 
     c_feat,c_data = get_hdf5_data(hdf5_filename,fields=['center'])
 
-    s_feat,s_data = speed_feature_extraction(hdf5_filename)
+    s_feat,s_data = speed_feature_extraction(c_data)
     print s_feat
     print s_data
 
-    d_feat,d_data = direction_feature_extraction(hdf5_filename)
+    d_feat,d_data = direction_feature_extraction(c_data)
     print d_feat
     print d_data
 
