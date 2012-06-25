@@ -170,6 +170,18 @@ def hurst_curv_exponent(xy):
     #    plt.show()
     return m
 
+def rayleigh(rho,theta):
+    """extract circular statistics from direction distribution
+    """
+    n = npy.sum(rho)
+    C = (1./n) * npy.sum(rho*npy.cos(theta))
+    S = (1./n) * npy.sum(rho*npy.sin(theta))
+    R = npy.sqrt(C**2+S**2)
+    V = 1. - R
+    Theta = npy.arctan2(S,C)
+    return (R,V,Theta)
+
+
 def relative_direction_distribution(xy):
     """computes instantaneous directions and make an histogram centered on previous direction
     """
@@ -182,23 +194,21 @@ def relative_direction_distribution(xy):
     clip_dtheta[dtheta>npy.pi] = dtheta[dtheta>npy.pi] - npy.pi
     clip_dtheta[dtheta<-npy.pi] = dtheta[dtheta<-npy.pi] + npy.pi
 
+    #resulting direction
+    (R,V,Theta) = rayleigh(rho,dtheta)
+
     N = 8
     width = 2*npy.pi/N
     offset_th = .5*width
     bins = npy.linspace(-npy.pi-offset_th,npy.pi+offset_th,N+2,endpoint=True)
     print 'bins',bins
-    h_theta,bin_theta = npy.histogram(clip_dtheta,bins=bins,weights=rho)
+    h_theta,bin_theta = npy.histogram(clip_dtheta,bins=bins,weights=rho) # ! weighted histogram
     print 'h',h_theta
 
     h_theta[0]+=h_theta[-1]
 
     dx = rho*npy.cos(dtheta)
     dy = rho*npy.sin(dtheta)
-
-
-    #resulting direction
-#    tot_theta = npy.arctan2(tot_dxy[0],tot_dxy[1])
-#    tot_rho = npy.sqrt(npy.sum(tot_dxy**2))
 
     import matplotlib.pyplot as plt
     fig=plt.figure()
@@ -207,13 +217,15 @@ def relative_direction_distribution(xy):
     ax.bar(bin_theta[0:-2], h_theta[:-1], width=width, bottom=0.0)
 #    plt.plot(h[0])
 #    plt.plot(dx,dy)
-    plt.polar(clip_dtheta,rho, 'ro')
+    plt.polar(clip_dtheta,rho, 'bo')
+    plt.polar(Theta,R,'ro')
 #    plt.polar(dtheta,rho+.1, 'bo')
 #    plt.hist(dtheta)
 #    plt.figure()
 #    plt.hist(clip_dtheta)
 #    plt.polar(tot_theta,tot_rho, 'bo')
-
+    ax = fig.add_axes([0.1, 0.1, 0.2, 0.2])
+    plt.plot(xy[:,0],xy[:,1])
     plt.show()
     return 0
 #----------------------------------------------------------------------------------------------
