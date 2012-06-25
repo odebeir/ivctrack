@@ -26,6 +26,7 @@ from hdf5_read import get_hdf5_data
 from quickhull2d import qhull
 from scipy.spatial.distance import pdist,squareform
 from scipy.stats import linregress
+from scipy.ndimage.filters import gaussian_filter1d
 
 #-------SPEED---------------------------------------------------------------------------------------
 def inst_speed(xy):
@@ -173,14 +174,19 @@ def hurst_curv_exponent(xy):
 def rayleigh(rho,theta):
     """extract circular statistics from direction distribution
     """
-    n = npy.sum(rho)
-    C = (1./n) * npy.sum(rho*npy.cos(theta))
-    S = (1./n) * npy.sum(rho*npy.sin(theta))
+    Rtot = npy.sum(rho)
+    C = (1./Rtot) * npy.sum(rho*npy.cos(theta))
+    S = (1./Rtot) * npy.sum(rho*npy.sin(theta))
     R = npy.sqrt(C**2+S**2)
     V = 1. - R
     Theta = npy.arctan2(S,C)
-    return (R,V,Theta)
+    return (R,V,Theta,Rtot)
 
+def filter(xy,sigma):
+    """2D trajectory filter
+    """
+    fxy = gaussian_filter1d(xy,sigma=sigma,axis=0,mode='nearest')
+    return fxy
 
 def relative_direction_distribution(xy):
     """computes instantaneous directions and make an histogram centered on previous direction
@@ -190,44 +196,45 @@ def relative_direction_distribution(xy):
     rho = npy.sqrt(npy.sum(dxy**2,axis=1))
     dtheta = theta[1:]-theta[0:-1]
     dtheta = npy.hstack(([0],dtheta))
+    #verify that theta is in [-pi,+pi]
     clip_dtheta = dtheta.copy()
-    clip_dtheta[dtheta>npy.pi] = dtheta[dtheta>npy.pi] - npy.pi
-    clip_dtheta[dtheta<-npy.pi] = dtheta[dtheta<-npy.pi] + npy.pi
+    clip_dtheta[dtheta>npy.pi] = dtheta[dtheta>npy.pi] - 2.*npy.pi
+    clip_dtheta[dtheta<-npy.pi] = dtheta[dtheta<-npy.pi] + 2.* npy.pi
 
-    #resulting direction
-    (R,V,Theta) = rayleigh(rho,dtheta)
+    #resulting direction and dispersion
+    (R,V,Theta,Rtot) = rayleigh(rho,clip_dtheta)
 
+    #distribution
     N = 8
     width = 2*npy.pi/N
     offset_th = .5*width
     bins = npy.linspace(-npy.pi-offset_th,npy.pi+offset_th,N+2,endpoint=True)
-    print 'bins',bins
     h_theta,bin_theta = npy.histogram(clip_dtheta,bins=bins,weights=rho) # ! weighted histogram
-    print 'h',h_theta
-
+    #grouping first and last bin corresponding to the same direction
     h_theta[0]+=h_theta[-1]
 
-    dx = rho*npy.cos(dtheta)
-    dy = rho*npy.sin(dtheta)
+    if False:
+        import matplotlib.pyplot as plt
+        fig=plt.figure()
+        ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True,)
+        #    #plot polar histogram bins
+        #    ax.bar(bin_theta[0:-1], npy.ones_like(bin_theta[0:-1]), width=width, bottom=0.0,alpha=.5)
 
-    import matplotlib.pyplot as plt
-    fig=plt.figure()
-    ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True)
-#    ax.bar(bin_theta[0:-1], npy.ones_like(bin_theta[0:-1]), width=width, bottom=0.0,alpha=.5)
-    ax.bar(bin_theta[0:-2], h_theta[:-1], width=width, bottom=0.0)
-#    plt.plot(h[0])
-#    plt.plot(dx,dy)
-    plt.polar(clip_dtheta,rho, 'bo')
-    plt.polar(Theta,R,'ro')
-#    plt.polar(dtheta,rho+.1, 'bo')
-#    plt.hist(dtheta)
-#    plt.figure()
-#    plt.hist(clip_dtheta)
-#    plt.polar(tot_theta,tot_rho, 'bo')
-    ax = fig.add_axes([0.1, 0.1, 0.2, 0.2])
-    plt.plot(xy[:,0],xy[:,1])
-    plt.show()
-    return 0
+        #plot polar distribution
+        ax.bar(bin_theta[0:-2], h_theta[:-1], width=width, bottom=0.0)
+        #plot relative displacement
+        plt.polar(clip_dtheta,rho, 'bo')
+
+        #plot main direction and dispersion
+        plt.polar(Theta,R*Rtot,'ro')
+        ax.bar(Theta-V/2, R*Rtot*.01, width=V, bottom=R*Rtot)
+
+        #plot xy trajectory
+        ax = fig.add_axes([0.1, 0.1, 0.2, 0.2])
+        plt.plot(xy[:,0],xy[:,1])
+        plt.show()
+    return (R,V,Theta,Rtot,clip_dtheta,rho)
+
 #----------------------------------------------------------------------------------------------
 
 def speed_feature_extraction(hdf5_filename):
@@ -237,10 +244,11 @@ def speed_feature_extraction(hdf5_filename):
     feat_name = ['path_length','avg_speed','mrdo','hull_surf','hull_dist']
     for d in data:
         xy = d['center']
-        pl = path_length(xy)
-        avg = avg_speed(xy)
-        mrdo = mrdo_speed(xy)
-        hull_surf, hull_d = hull_speed(xy)
+        fxy = filter(xy,sigma=1.)
+        pl = path_length(fxy)
+        avg = avg_speed(fxy)
+        mrdo = mrdo_speed(fxy)
+        hull_surf, hull_d = hull_speed(fxy)
         measures.append((pl,avg,mrdo,hull_surf,hull_d))
     measures = npy.asarray(measures)
 
@@ -250,13 +258,14 @@ def direction_feature_extraction(hdf5_filename):
 
     features,data = get_hdf5_data(hdf5_filename,fields=['center'])
     measures = []
-    feat_name = ['scaling_exponent','scaling_exponent_r2']
+    feat_name = ['scaling_exponent','scaling_exponent_r2','R','Rtot']
     for d in data:
         xy = d['center']
-        se,se_err = scaling_exponent(xy)
-#        hurst_c = hurst_curv_exponent(xy)
-        relative_direction_distribution(xy)
-        measures.append((se,se_err))
+        fxy = filter(xy,sigma=1.)
+
+        se,se_err = scaling_exponent(fxy)
+        R,V,Theta,Rtot,clip_dtheta,rho = relative_direction_distribution(fxy)
+        measures.append((se,se_err,R,Rtot))
 
     measures = npy.asarray(measures)
 
@@ -291,12 +300,16 @@ if __name__=='__main__':
         p_length = s_data[r,0]
         x0 = xy[0,0]
         y0 = xy[0,1]
-        offset_x = s_data[r,4]*1000
+#        offset_x = s_data[r,4]*1000
 #        offset_x = p_length*10
 #        offset_x = s_data[r,3]*100
-        offset_y = d_data[r,0]*1000
+        offset_x = d_data[r,3]*10
+        offset_y = d_data[r,2]*1000
         plt.plot(xy[:,0]-x0+offset_x,xy[:,1]-y0+offset_y)
+        fxy = filter(xy,sigma=1.)
+        plt.plot(fxy[:,0]-x0+offset_x,fxy[:,1]-y0+offset_y)
+        plt.plot(offset_x,offset_y,'o')
 #        plt.text(xy[0,0]-x0+offset_x,xy[0,1]-y0+offset_y,'%.3f(%.3f)'%(d_data[r,0],d_data[r,1]))
 
-#    plt.show()
+    plt.show()
 
