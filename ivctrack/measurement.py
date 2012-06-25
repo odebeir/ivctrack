@@ -113,7 +113,7 @@ def plot_hull_speed(xy):
     return 0
 
 #-------DIRECTION---------------------------------------------------------------------------------------
-def scaling_exponent(xy):
+def scaling_exponent(xy,verbose=False):
     """computes the Hurst coefficient which qualify how the trajectory is persistent in time
     it is related to the fractal dimension of the trajectory
     """
@@ -134,15 +134,19 @@ def scaling_exponent(xy):
     y = npy.log(data[:,1])
     slope, intercept, r_value, p_value, std_err = linregress(x,y)
 
-#    print slope, r_value, std_err
-#    fig = plt.figure()
-#    ax = fig.add_subplot(111, aspect='equal')
-##    plt.plot(data[:,0],data[:,1])
-#    plt.plot(x,y)
-#    plt.show()
+    if verbose:
+        import matplotlib.pyplot as plt
+        print slope, r_value, std_err
+        fig = plt.figure()
+        ax = fig.add_subplot(111, aspect='equal')
+        plt.plot(x,y,label='distance')
+        plt.plot(x,slope*x+intercept,label='lin.fit $r=%.3f$'%r_value)
+        plt.legend()
+        plt.xlabel('$H=%.3f$'%slope)
+        plt.show()
     return (slope,r_value**2)
 
-def hurst_curv_exponent(xy):
+def hurst_curv_exponent(xy,verbose=False):
     """computes the Hurst coefficient which qualify how the trajectory is persistent in time
     it is related to the fractal dimension of the trajectory, here the denominator is the curvilinear distance
     """
@@ -164,11 +168,13 @@ def hurst_curv_exponent(xy):
     A = npy.vstack([x, npy.ones(len(x))]).T
     m, c = npy.linalg.lstsq(A, y)[0]
 
-    #    fig = plt.figure()
-    #    ax = fig.add_subplot(111, aspect='equal')
-    #    plt.loglog(data[:,0],data[:,1])
-    #    plt.legend()
-    #    plt.show()
+    if verbose:
+        import matplotlib.pyplot as plt
+        fig = plt.figure()
+        ax = fig.add_subplot(111, aspect='equal')
+        plt.loglog(data[:,0],data[:,1])
+        plt.legend()
+        plt.show()
     return m
 
 def rayleigh(rho,theta):
@@ -188,7 +194,7 @@ def filter(xy,sigma):
     fxy = gaussian_filter1d(xy,sigma=sigma,axis=0,mode='nearest')
     return fxy
 
-def relative_direction_distribution(xy):
+def relative_direction_distribution(xy,verbose=True):
     """computes instantaneous directions and make an histogram centered on previous direction
     """
     dxy = xy[1:,:]-xy[0:-1,:]
@@ -213,7 +219,7 @@ def relative_direction_distribution(xy):
     #grouping first and last bin corresponding to the same direction
     h_theta[0]+=h_theta[-1]
 
-    if False:
+    if verbose:
         import matplotlib.pyplot as plt
         fig=plt.figure()
         ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True,)
@@ -221,24 +227,26 @@ def relative_direction_distribution(xy):
         #    ax.bar(bin_theta[0:-1], npy.ones_like(bin_theta[0:-1]), width=width, bottom=0.0,alpha=.5)
 
         #plot polar distribution
-        ax.bar(bin_theta[0:-2], h_theta[:-1], width=width, bottom=0.0)
+        ax.bar(bin_theta[0:-2], h_theta[:-1], width=width, bottom=0.0,label='rel.direction hist.')
         #plot relative displacement
-        plt.polar(clip_dtheta,rho, 'bo')
+        plt.polar(clip_dtheta,rho, 'yo',label='rel.direction')
 
         #plot main direction and dispersion
-        plt.polar(Theta,R*Rtot,'ro')
-        ax.bar(Theta-V/2, R*Rtot*.01, width=V, bottom=R*Rtot)
-
+        plt.polar(Theta,R*Rtot,'ro',label='avg.')
+        ax.bar(Theta-V/2, R*Rtot*.01, color='k',width=V, bottom=R*Rtot,label='dispersion')
+        ax.legend(loc='upper left')
         #plot xy trajectory
         ax = fig.add_axes([0.1, 0.1, 0.2, 0.2])
         plt.plot(xy[:,0],xy[:,1])
+        plt.plot(xy[0,0],xy[0,1],'k+')
         plt.show()
     return (R,V,Theta,Rtot,clip_dtheta,rho)
 
 #----------------------------------------------------------------------------------------------
 
 def speed_feature_extraction(c_data):
-
+    """compute speed feature from a list of dict {'frames','center'}
+    """
     measures = []
     feat_name = ['path_length','avg_speed','mrdo','hull_surf','hull_dist']
     for d in c_data:
@@ -254,7 +262,8 @@ def speed_feature_extraction(c_data):
     return (feat_name,measures)
 
 def direction_feature_extraction(c_data):
-
+    """compute directional feature from a list of dict {'frames','center'}
+    """
     measures = []
     feat_name = ['scaling_exponent','scaling_exponent_r2','R','Rtot']
     for d in c_data:
