@@ -68,11 +68,11 @@ def area_of_triangle(p1, p2, p3):
 
     return npy.linalg.norm(npy.cross((p2 - p1), (p3 - p1)))/2.
 
-def hull_speed(xy):
+def hull_speed(xy,verbose=False):
     """
     >>> xy = npy.asarray([[0,0],[0,1],[1,1],[1,0]])
     >>> print hull_speed(xy)
-    (0.25, 0.35355339059327379)
+    (0.25, 0.35355339059327379, 0.0625, 0.35355339059327379)
     """
     hull_xy = qhull(xy)
     #max dist inside hull
@@ -90,33 +90,20 @@ def hull_speed(xy):
         a = area_of_triangle(p1,p2,p3)
         hull_surf += a
 
+    if verbose:
+        import matplotlib.pyplot as plt
+
+        fig = plt.figure()
+        ax = fig.add_subplot(111, aspect='equal')
+        plt.scatter(xy[:,0],xy[:,1])
+        plt.plot(hull_xy[:,0],hull_xy[:,1])
+        plt.show()
+
     return (hull_surf/xy.shape[0],d[dmax_idx]/xy.shape[0],hull_surf/tot_length**2,d[dmax_idx]/tot_length)
 
-def plot_hull_speed(xy):
-    import matplotlib.pyplot as plt
-
-    hull_xy = qhull(xy)
-    d = pdist(hull_xy, 'euclidean')
-    dmax_idx = npy.argmax(d)
-
-    r = npy.zeros_like(d)
-    r[dmax_idx] = 1
-    sd = squareform(r)
-
-    ext_idx = npy.nonzero(sd)[1]
-    p0 = hull_xy[ext_idx[0],:]
-    p1 = hull_xy[ext_idx[1],:]
-
-    fig = plt.figure()
-    ax = fig.add_subplot(111, aspect='equal')
-    plt.scatter(xy[:,0],xy[:,1])
-    plt.plot(hull_xy[:,0],hull_xy[:,1])
-    plt.plot([p0[0],p1[0]],[p0[1],p1[1]])
-    plt.show()
-    return 0
 
 #-------DIRECTION---------------------------------------------------------------------------------------
-def scaling_exponent(xy,verbose=True):
+def scaling_exponent(xy,verbose=False):
     """computes the Hurst coefficient which qualify how the trajectory is persistent in time
     it is related to the fractal dimension of the trajectory
     """
@@ -139,6 +126,7 @@ def scaling_exponent(xy,verbose=True):
 
     if verbose:
         import matplotlib.pyplot as plt
+
         print slope, r_value, std_err
         fig = plt.figure()
         ax = fig.add_subplot(111, aspect='equal')
@@ -173,6 +161,7 @@ def hurst_curv_exponent(xy,verbose=False):
 
     if verbose:
         import matplotlib.pyplot as plt
+
         fig = plt.figure()
         ax = fig.add_subplot(111, aspect='equal')
         plt.loglog(data[:,0],data[:,1])
@@ -224,6 +213,7 @@ def relative_direction_distribution(xy,verbose=False):
 
     if verbose:
         import matplotlib.pyplot as plt
+        
         fig=plt.figure()
         ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True,)
         #    #plot polar histogram bins
@@ -258,7 +248,7 @@ def speed_feature_extraction(c_data):
         pl = path_length(fxy)
         avg = avg_speed(fxy)
         mrdo = mrdo_speed(fxy)
-        hull_surf, hull_d , hull_density, hull_drel= hull_speed(fxy)
+        hull_surf, hull_d , hull_density, hull_drel= hull_speed(fxy,verbose=False)
         measures.append((pl,avg,mrdo,hull_surf,hull_d,hull_density,hull_drel))
     measures = npy.asarray(measures)
 
@@ -273,8 +263,8 @@ def direction_feature_extraction(c_data):
         xy = d['center']
         fxy = filter(xy,sigma=1.)
 
-        se,se_err = scaling_exponent(fxy)
-        R,V,Theta,Rtot,clip_dtheta,rho = relative_direction_distribution(fxy)
+        se,se_err = scaling_exponent(fxy,verbose=True)
+        R,V,Theta,Rtot,clip_dtheta,rho = relative_direction_distribution(fxy,verbose=True)
         measures.append((se,se_err,R,Rtot))
 
     measures = npy.asarray(measures)
