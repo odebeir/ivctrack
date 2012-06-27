@@ -33,7 +33,7 @@ import numpy as npy
 
 from chaco.tools.api import PanTool, ZoomTool
 
-from ivctrack.cellmodel import Cell
+from ivctrack.cellmodel import Cell,AdaptiveCell
 from ivctrack.reader import ZipSource,Reader
 
 from enable.api import BaseTool
@@ -203,6 +203,6 @@ if __name__ == "__main__":
 
     params = {'N':16,'radius_halo':23,'radius_soma':12,'exp_halo':20,'exp_soma':2,'niter':10,'alpha':.75}
 
-    demo = ScatterPlotTraits(reader=reader,params=params,model=Cell)
+    demo = ScatterPlotTraits(reader=reader,params=params,model=AdaptiveCell)
 
     demo.configure_traits()

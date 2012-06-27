@@ -114,8 +114,19 @@ class AdaptiveCell(Cell):
     def build_triangles(self):
         """Build triangle lists for the Cell model, one for the halo tracking, one for the soma tracking
         """
-        self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo)
-        self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma)
+        try:
+            #find radius of the current halo if it exists
+            s = self.shift_halo
+            halo_xy = npy.asarray([sh[0:2] for sh in s])
+            r = npy.sqrt(npy.sum((halo_xy-self.center)**2,axis=1))*1.5
+            r = npy.minimum(npy.maximum(r,10),self.radius_halo)
+            self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,r)
+            self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma)
+
+        except AttributeError:
+            print 'default radius',self.radius_halo
+            self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo)
+            self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma)
 
 
     def update(self,im):
