@@ -24,6 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button, Trait, Float
 from traitsui.api import View, Group, Item, RangeEditor,ValueEditor,TableEditor,CustomEditor,TreeEditor,CompoundEditor
+from traitsui.api import HGroup, VGroup
 from enable.component_editor import ComponentEditor
 from chaco.api import Plot, ArrayPlotData, jet, gray
 
@@ -100,12 +101,15 @@ class ScatterPlotTraits(HasTraits):
     cursor1 = Instance(CustomTool)
     cursor1pos = DelegatesTo('cursor1', prefix='current_position')
 
-    traits_view = View(Item('paramsUI',style='custom'),
-        Group(Item('button', show_label=False),
+    traits_view = View(
+        HGroup(VGroup(Item('paramsUI',style='custom', show_label=False),
+            Item('frame', editor = RangeEditor(mode = 'slider',low_name='low',high_name='high'),   show_label=False),
+            ),
+            VGroup(Item('button', show_label=False),
             Item('test1', show_label=False),
             Item('plot', editor=ComponentEditor(), show_label=False),
-            Item('frame', editor = RangeEditor(mode = 'slider',low_name='low',high_name='high'),   show_label=False),
             orientation = "vertical"),
+            ),
         width=800, height=600, resizable=True, title="Chaco Plot")
 
     def __init__(self,reader,model,params):
