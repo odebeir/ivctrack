@@ -39,9 +39,7 @@ class Cell():
     """Cell object, the model is described by:
 
     * a cell position
-
     * the number of division (for both outer and inner part)
-
     * the weight Look Up Table used for the inner (black soma) and for the outer part (white halo)
     """
     def __init__(self,x0,y0,N=16,radius_halo=30,radius_soma=12,exp_halo=10,exp_soma=2,niter=10,alpha=.75):
@@ -108,6 +106,40 @@ class Cell():
                 'attributes':[('features',meanshift_features),('dims',['0-frame','1-pie#','2-features'])]}
 
         return [center,halo,soma]
+
+class AdaptiveCell(Cell):
+    def __init__(self,x0,y0,**params):
+        Cell.__init__(self,x0,y0,**params)
+
+    def build_triangles(self):
+        """Build triangle lists for the Cell model, one for the halo tracking, one for the soma tracking
+        """
+        self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo)
+        self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma)
+
+
+    def update(self,im):
+        """Update cell position with respect to a given image
+        raddii are adjusted accordingly to the previous size
+        """
+        self.path = npy.zeros((self.niter,2))
+        for iter in range(self.niter):
+            #compute the shifts
+            self.shift_halo = meanshift(im,self.tri_halo,0.0,0.0,lut = self.LutW)
+            self.shift_soma = meanshift(im,self.tri_soma,0.0,0.0,lut = self.LutB)
+
+            #update the position
+            # halo centroid
+            halo = npy.asarray([sh[0:2] for sh in self.shift_halo])
+            # nucleus centroid
+            soma = npy.asarray([sh[0:2] for sh in self.shift_halo])
+
+            self.center[:] = (1.-self.alpha) * soma.mean(axis=0) + self.alpha * halo.mean(axis=0)
+            self.path[iter,:] = self.center
+
+            #update the triangles
+            self.build_triangles()
+
 
 class Track(object):
     """Object responsible for recording different cell position during time, it also manage the mark positions
@@ -259,7 +291,7 @@ def test_experiment():
 
     track_list = []
     for x0,y0,frame0 in marks:
-        t = Track(x0=x0,y0=y0,frame0=frame0,model=Cell,params=params)
+        t = Track(x0=x0,y0=y0,frame0=frame0,model=AdaptiveCell,params=params)
         experiment.add_track(t)
 
     #process the tracking

@@ -142,15 +142,29 @@ n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
 
 def generate_triangles(x,y,N,R):
     """Returns an ensemble of triangles centered on xy
+    if R is an iterable, each radius may be different
     """
     triangleList = []
     p0 = npy.array((x,y))
     #internal pies
-    for i in range(N):
-        p1 = p0 +(R*npy.cos(i*2*npy.pi/N),R*npy.sin(i*2*npy.pi/N))
-        p2 = p0 +(R*npy.cos((i+1)*2*npy.pi/N),R*npy.sin((i+1)*2*npy.pi/N))
-        tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]))              
-        triangleList.append(tri)
+    try:
+        iterator = iter(R)
+    except TypeError:
+        # not iterable
+        r = R
+        for i in range(N):
+            p1 = p0 +(r*npy.cos(i*2*npy.pi/N),r*npy.sin(i*2*npy.pi/N))
+            p2 = p0 +(r*npy.cos((i+1)*2*npy.pi/N),r*npy.sin((i+1)*2*npy.pi/N))
+            tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]))
+            triangleList.append(tri)
+    else:
+        # iterable
+        for i in range(N):
+            r = R[i]
+            p1 = p0 +(r*npy.cos(i*2*npy.pi/N),r*npy.sin(i*2*npy.pi/N))
+            p2 = p0 +(r*npy.cos((i+1)*2*npy.pi/N),r*npy.sin((i+1)*2*npy.pi/N))
+            tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]))
+            triangleList.append(tri)
     return triangleList
 
 def generate_inverted_triangles(x,y,N,R):

@@ -213,7 +213,7 @@ def relative_direction_distribution(xy,verbose=False):
 
     if verbose:
         import matplotlib.pyplot as plt
-        
+
         fig=plt.figure()
         ax = fig.add_axes([0.1, 0.1, 0.8, 0.8], polar=True,)
         #    #plot polar histogram bins

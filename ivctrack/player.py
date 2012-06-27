@@ -276,7 +276,7 @@ def test_player():
     """reopen an HDF5 file
     """
     datazip_filename = '../test/data/seq0_extract.zip'
-    hdf5filename = '../test/temp/test.hdf5'
+    hdf5filename = '../test/temp/test_rev.hdf5'
 
     reader = Reader(ZipSource(datazip_filename))
 #    reader = Reader(DumbSource())
