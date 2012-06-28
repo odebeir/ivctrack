@@ -124,7 +124,6 @@ class AdaptiveCell(Cell):
             self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma)
 
         except AttributeError:
-            print 'default radius',self.radius_halo
             self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo)
             self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma)
 
