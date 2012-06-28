@@ -313,20 +313,23 @@ def test_experiment():
 
 if __name__ == "__main__":
 
-    import cProfile
+    if True:
+        test_experiment()
+    else:
+        import cProfile
 
-    cProfile.run('test_experiment()', '../test/temp/expprof')
+        cProfile.run('test_experiment()', '../test/temp/expprof')
 
 
-    import pstats
-    p = pstats.Stats('../test/temp/expprof')
+        import pstats
+        p = pstats.Stats('../test/temp/expprof')
 
-    p.strip_dirs().sort_stats(-1).print_stats()
-    p.sort_stats('name')
-    p.print_stats()
+        p.strip_dirs().sort_stats(-1).print_stats()
+        p.sort_stats('name')
+        p.print_stats()
 
-    p.sort_stats('cumulative').print_stats(20)
+        p.sort_stats('cumulative').print_stats(20)
 
-    p.sort_stats('time').print_stats(20)
+        p.sort_stats('time').print_stats(20)
 
-    p.sort_stats('time', 'cum').print_stats(.5, 'init')
+        p.sort_stats('time', 'cum').print_stats(.5, 'init')

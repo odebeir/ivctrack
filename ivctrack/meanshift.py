@@ -114,7 +114,9 @@ double off_y = offset_y;
 
 // call the function defined in the meanshift.c file
 //return an int to Python
+
 n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
+
 """
 
     try:
@@ -155,7 +157,7 @@ def generate_triangles(x,y,N,R):
         for i in range(N):
             p1 = p0 +(r*npy.cos(i*2*npy.pi/N),r*npy.sin(i*2*npy.pi/N))
             p2 = p0 +(r*npy.cos((i+1)*2*npy.pi/N),r*npy.sin((i+1)*2*npy.pi/N))
-            tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]))
+            tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]),dtype=float)
             triangleList.append(tri)
     else:
         # iterable
@@ -163,7 +165,7 @@ def generate_triangles(x,y,N,R):
             r = R[i]
             p1 = p0 +(r*npy.cos(i*2*npy.pi/N),r*npy.sin(i*2*npy.pi/N))
             p2 = p0 +(r*npy.cos((i+1)*2*npy.pi/N),r*npy.sin((i+1)*2*npy.pi/N))
-            tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]))
+            tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]),dtype=float)
             triangleList.append(tri)
     return triangleList
 
@@ -196,12 +198,13 @@ def testMeanshift():
     RBlack = 15
     triangleListBlack = []
     triangleListWhite = []
+
     for x,y in cellLocations:
         tWhite = generate_triangles(x,y,N,RWhite)
         tBlack = generate_inverted_triangles(x,y,N,RBlack)
         triangleListWhite.extend(tWhite)
         triangleListBlack.extend(tBlack)
-    
+
     shift_white = meanshift(im,triangleListWhite,0.0,0.0,lut = LUT('white',10))
     shift_black = meanshift(im,triangleListBlack,0.0,0.0,lut = LUT('black',10))
 
