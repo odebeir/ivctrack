@@ -62,8 +62,8 @@ def meanshift(ima,triangleList,offset_x,offset_y,lut=None):
     :type ima: uint8
     :param lut: lookup table applied to each ima pixel
     :type lut: float64 table of lookup (8bit=256 values)
-    :param triangleList: list of the triangle to process
-    :type triangleList:
+    :param triangleList: list of the triangle to process (array with one line per triangle)
+    :type array:
     :param offset_x: constant value added to triangle coordinates
     :type offset_x: float
     :param offset_y: constant value added to triangle coordinates
@@ -128,13 +128,16 @@ n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
 
     if lut is None:
         lut = npy.arange(256,dtype = 'float64')
-    
-    n = len(triangleList)
+
+#    triangleList = npy.asarray(triangleList)
+
+    n = triangleList.shape[0]
     shift = npy.zeros((n,8),dtype = 'float64', order='C')
     out = npy.zeros(8,dtype = 'float64', order='C')
 
     force = False
-    for i,triangle in enumerate(triangleList):
+    for i in range(n):
+        triangle = triangleList[i,:]
         out[:] = 0.0
         inline(code, ['ima','out','triangle','lut','offset_x','offset_y'],support_code=extra_code,force=force)
         shift[i,:] = npy.copy(out)
@@ -146,7 +149,7 @@ def generate_triangles(x,y,N,R):
     """Returns an ensemble of triangles centered on xy
     if R is an iterable, each radius may be different
     """
-    triangleList = []
+    triangleList = npy.ndarray((N,6))
     p0 = npy.array((x,y))
     #internal pies
     try:
@@ -158,7 +161,7 @@ def generate_triangles(x,y,N,R):
             p1 = p0 +(r*npy.cos(i*2*npy.pi/N),r*npy.sin(i*2*npy.pi/N))
             p2 = p0 +(r*npy.cos((i+1)*2*npy.pi/N),r*npy.sin((i+1)*2*npy.pi/N))
             tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]),dtype=float)
-            triangleList.append(tri)
+            triangleList[i,:]=tri
     else:
         # iterable
         for i in range(N):
@@ -166,13 +169,13 @@ def generate_triangles(x,y,N,R):
             p1 = p0 +(r*npy.cos(i*2*npy.pi/N),r*npy.sin(i*2*npy.pi/N))
             p2 = p0 +(r*npy.cos((i+1)*2*npy.pi/N),r*npy.sin((i+1)*2*npy.pi/N))
             tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]),dtype=float)
-            triangleList.append(tri)
+            triangleList[i,:]=tri
     return triangleList
 
 def generate_inverted_triangles(x,y,N,R):
     """Returns an ensemble of triangles centered on xy but with large base at the center
     """
-    triangleList = []
+    triangleList = npy.ndarray((N,6))
     center = npy.array((x,y))
     #internal pies
     angle = 2*npy.pi/N
@@ -181,7 +184,7 @@ def generate_inverted_triangles(x,y,N,R):
         p1 = center+(R*npy.cos(i*angle),R*npy.sin(i*angle))
         p2 = center+(R*npy.cos((i+1)*angle),R*npy.sin((i+1)*angle))
         tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]))
-        triangleList.append(tri)
+        triangleList[i,:]=tri
     return triangleList  
       
 def testMeanshift():
@@ -193,17 +196,18 @@ def testMeanshift():
     print 'test MS'
     im = imread('../test/data/exp0001.jpg')
     cellLocations = [(340,190),(474,331),(120,231)]
+    n = len(cellLocations)
     N = 16
     RWhite = 30
     RBlack = 15
-    triangleListBlack = []
-    triangleListWhite = []
+    triangleListBlack = npy.ndarray((0,6))
+    triangleListWhite = npy.ndarray((0,6))
 
     for x,y in cellLocations:
         tWhite = generate_triangles(x,y,N,RWhite)
         tBlack = generate_inverted_triangles(x,y,N,RBlack)
-        triangleListWhite.extend(tWhite)
-        triangleListBlack.extend(tBlack)
+        triangleListWhite = npy.vstack((triangleListWhite,tWhite))
+        triangleListBlack= npy.vstack((triangleListBlack,tBlack))
 
     shift_white = meanshift(im,triangleListWhite,0.0,0.0,lut = LUT('white',10))
     shift_black = meanshift(im,triangleListBlack,0.0,0.0,lut = LUT('black',10))
