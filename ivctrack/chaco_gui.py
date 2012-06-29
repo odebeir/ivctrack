@@ -22,9 +22,9 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button, Trait, Float
-from traitsui.api import View, Group, Item, RangeEditor,ValueEditor,TableEditor,CustomEditor,TreeEditor,CompoundEditor
-from traitsui.api import HGroup, VGroup
+from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button, Trait, Float, Enum
+from traitsui.api import RangeEditor,ValueEditor,TableEditor,CustomEditor,TreeEditor,CompoundEditor,EnumEditor
+from traitsui.api import HGroup,VGroup,View,Group, Item
 from enable.component_editor import ComponentEditor
 from chaco.api import Plot, ArrayPlotData, jet, gray
 
@@ -88,7 +88,7 @@ class ScatterPlotTraits(HasTraits):
     low = Int(0)
     high = Int(1)
 
-    model = Class(Cell)
+    model = Enum(Cell,AdaptiveCell)
     params = Dict()
 
     x0 = Float(100)
@@ -102,7 +102,15 @@ class ScatterPlotTraits(HasTraits):
     cursor1pos = DelegatesTo('cursor1', prefix='current_position')
 
     traits_view = View(
-        HGroup(VGroup(Item('paramsUI',style='custom', show_label=False),
+        HGroup(VGroup(
+            Item(name='model',
+                editor=EnumEditor(values={
+                    Cell : '1:Cell',
+                    AdaptiveCell    : '2:AdaptiveCell',
+                    }
+                )
+            ),
+            Item('paramsUI',style='custom', show_label=False),
             Item('frame', editor = RangeEditor(mode = 'slider',low_name='low',high_name='high'),   show_label=False),
             ),
             VGroup(Item('button', show_label=False),
@@ -152,6 +160,9 @@ class ScatterPlotTraits(HasTraits):
 
     def update_param(self):
         self.params = self.paramsUI.get_dict()
+
+    def _model_changed(self):
+        self._params_changed()
 
     def _params_changed(self):
         """when cell parameters are changed, a new cell replace the previous one
