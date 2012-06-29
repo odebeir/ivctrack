@@ -143,26 +143,35 @@ n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
     return shift
 
 
-def generate_triangles(x,y,N,R):
+def generate_triangles(x,y,N,R,target=None):
     """Returns an ensemble of triangles centered on xy
     if R is an iterable, each radius may be different
+    if target is Nx6 ndarray, the value are copied inplace
     """
-    triangleList = npy.ndarray((N,6))
-    p0 = npy.array((x,y))
+    if target is None:
+        triangleList = npy.ndarray((N,6))
+    else:
+        triangleList = target
+
     #internal pies
     i = npy.arange(N)
-    triangleList[:,0:2] = p0
-    triangleList[:,2] = p0[0]+R*npy.cos(i*2*npy.pi/N)
-    triangleList[:,3] = p0[1]+R*npy.sin(i*2*npy.pi/N)
-    triangleList[:,4] = p0[0]+R*npy.cos((i+1)*2*npy.pi/N)
-    triangleList[:,5] = p0[1]+R*npy.sin((i+1)*2*npy.pi/N)
+    triangleList[:,0:2] = (x,y)
+    triangleList[:,2] = x+R*npy.cos(i*2*npy.pi/N)
+    triangleList[:,3] = y+R*npy.sin(i*2*npy.pi/N)
+    triangleList[:,4] = x+R*npy.cos((i+1)*2*npy.pi/N)
+    triangleList[:,5] = y+R*npy.sin((i+1)*2*npy.pi/N)
 
     return triangleList
 
-def generate_inverted_triangles(x,y,N,R):
+def generate_inverted_triangles(x,y,N,R,target=None):
     """Returns an ensemble of triangles centered on xy but with large base at the center
+    if target is Nx6 ndarray, the value are copied inplace
     """
-    triangleList = npy.ndarray((N,6))
+    if target is None:
+        triangleList = npy.ndarray((N,6))
+    else:
+        triangleList = target
+
     #internal pies
     angle = 2*npy.pi/N
     i = npy.arange(N)

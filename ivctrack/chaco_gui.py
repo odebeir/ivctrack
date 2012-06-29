@@ -213,7 +213,8 @@ class ScatterPlotTraits(HasTraits):
 if __name__ == "__main__":
 
 
-    datazip_filename = '../test/data/seq0_extract.zip'
+    datazip_filename = '../test/data/seq0.zip'
+#    datazip_filename = '../test/data/seq0_extract.zip'
     reader = Reader(ZipSource(datazip_filename))
 
     params = {'N':16,'radius_halo':23,'radius_soma':12,'exp_halo':20,'exp_soma':2,'niter':10,'alpha':.75}
