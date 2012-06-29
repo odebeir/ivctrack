@@ -297,7 +297,7 @@ def test_experiment():
 
     #mark initial cell position (may be in the middle of the sequence
     marks = import_marks('../test/data/rev_marks.csv')
-    params = {'N':8,'radius_halo':20,'radius_soma':12,'exp_halo':10,'exp_soma':2,'niter':10,'alpha':.75}
+    params = {'N':12,'radius_halo':20,'radius_soma':15,'exp_halo':15,'exp_soma':2,'niter':10,'alpha':.75}
 
     track_list = []
     for x0,y0,frame0 in marks:

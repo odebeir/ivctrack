@@ -129,8 +129,6 @@ n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
     if lut is None:
         lut = npy.arange(256,dtype = 'float64')
 
-#    triangleList = npy.asarray(triangleList)
-
     n = triangleList.shape[0]
     shift = npy.zeros((n,8),dtype = 'float64', order='C')
     out = npy.zeros(8,dtype = 'float64', order='C')
@@ -152,39 +150,28 @@ def generate_triangles(x,y,N,R):
     triangleList = npy.ndarray((N,6))
     p0 = npy.array((x,y))
     #internal pies
-    try:
-        iterator = iter(R)
-    except TypeError:
-        # not iterable
-        r = R
-        for i in range(N):
-            p1 = p0 +(r*npy.cos(i*2*npy.pi/N),r*npy.sin(i*2*npy.pi/N))
-            p2 = p0 +(r*npy.cos((i+1)*2*npy.pi/N),r*npy.sin((i+1)*2*npy.pi/N))
-            tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]),dtype=float)
-            triangleList[i,:]=tri
-    else:
-        # iterable
-        for i in range(N):
-            r = R[i]
-            p1 = p0 +(r*npy.cos(i*2*npy.pi/N),r*npy.sin(i*2*npy.pi/N))
-            p2 = p0 +(r*npy.cos((i+1)*2*npy.pi/N),r*npy.sin((i+1)*2*npy.pi/N))
-            tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]),dtype=float)
-            triangleList[i,:]=tri
+    i = npy.arange(N)
+    triangleList[:,0:2] = p0
+    triangleList[:,2] = p0[0]+R*npy.cos(i*2*npy.pi/N)
+    triangleList[:,3] = p0[1]+R*npy.sin(i*2*npy.pi/N)
+    triangleList[:,4] = p0[0]+R*npy.cos((i+1)*2*npy.pi/N)
+    triangleList[:,5] = p0[1]+R*npy.sin((i+1)*2*npy.pi/N)
+
     return triangleList
 
 def generate_inverted_triangles(x,y,N,R):
     """Returns an ensemble of triangles centered on xy but with large base at the center
     """
     triangleList = npy.ndarray((N,6))
-    center = npy.array((x,y))
     #internal pies
     angle = 2*npy.pi/N
-    for i in range(N):
-        p0 = center-(R*npy.cos((i+.5)*angle),R*npy.sin((i+.5)*angle))
-        p1 = center+(R*npy.cos(i*angle),R*npy.sin(i*angle))
-        p2 = center+(R*npy.cos((i+1)*angle),R*npy.sin((i+1)*angle))
-        tri = npy.array((p0[0],p0[1],p1[0],p1[1],p2[0],p2[1]))
-        triangleList[i,:]=tri
+    i = npy.arange(N)
+    triangleList[:,0] = x-(R*npy.cos((i+.5)*angle))
+    triangleList[:,1] = y-(R*npy.sin((i+.5)*angle))
+    triangleList[:,2] = x+(R*npy.cos(i*angle))
+    triangleList[:,3] = y+(R*npy.sin(i*angle))
+    triangleList[:,4] = x+(R*npy.cos((i+1)*angle))
+    triangleList[:,5] = y+(R*npy.sin((i+1)*angle))
     return triangleList  
       
 def testMeanshift():
