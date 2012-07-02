@@ -26,6 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 from datetime import datetime
 import numpy as npy
 import csv
+from cache_decorators import lru_cache
 
 #specific import
 import h5py
@@ -109,6 +110,31 @@ class Cell():
 
         return [center,halo,soma]
 
+@lru_cache()
+def pre_compute_cos_sin_table(N):
+    """returns the cos and sin for each sector of 2pi/N
+    """
+    i = npy.arange(N)
+    c = npy.cos(i*2*npy.pi/N)
+    s = npy.sin(i*2*npy.pi/N)
+    c1 = npy.cos((i+1)*2*npy.pi/N)
+    s1 = npy.sin((i+1)*2*npy.pi/N)
+
+    return (c,s,c1,s1)
+
+@lru_cache()
+def pre_compute_cos_sin_table2(N):
+    """returns the cos and sin for each sector of 2pi/N
+    """
+    i = npy.arange(N)
+    cos_table = npy.cos(i*2*npy.pi/N)
+    sin_table = npy.sin(i*2*npy.pi/N)
+    cos_table1 = npy.cos((i+1)*2*npy.pi/N)
+    sin_table1 = npy.sin((i+1)*2*npy.pi/N)
+    cos_table_5 = npy.cos((i+.5)*2*npy.pi/N)
+    sin_table_5 = npy.sin((i+.5)*2*npy.pi/N)
+    return (cos_table,sin_table,cos_table1,sin_table1,cos_table_5,sin_table_5)
+
 class AdaptiveCell(Cell):
     def __init__(self,x0,y0,N=16,radius_halo=30,radius_soma=12,exp_halo=10,exp_soma=2,niter=10,alpha=.75):
         #model center
@@ -122,10 +148,34 @@ class AdaptiveCell(Cell):
         self.LutB = LUT('black',exp_soma)
         self.niter = niter
         self.alpha = alpha
+        #triangle description
         self.tri_halo = npy.ndarray((self.N,6))
         self.tri_soma = npy.ndarray((self.N/2,6)) # N/2 triangles for the soma
+        self.prev_radii = npy.ones(N)*radius_halo
 
         self.build_triangles()
+
+    def update_triangles(self):
+        #external pies
+        cos_table,sin_table,cos_table1,sin_table1 = pre_compute_cos_sin_table(self.N)
+        R = self.prev_radii*1.5
+        x,y = self.center
+        self.tri_halo[:,0:2] = self.center
+        self.tri_halo[:,2] = x+R*cos_table
+        self.tri_halo[:,3] = y+R*sin_table
+        self.tri_halo[:,4] = x+R*cos_table1
+        self.tri_halo[:,5] = y+R*sin_table1
+
+        #internal pies
+        cos_table,sin_table,cos_table1,sin_table1,cos_table_5,sin_table_5 = pre_compute_cos_sin_table2(self.N/2)
+        R = self.radius_soma
+        self.tri_soma[:,0] = x-(R*cos_table_5)
+        self.tri_soma[:,1] = y-(R*sin_table_5)
+        self.tri_soma[:,2] = x+(R*cos_table)
+        self.tri_soma[:,3] = y+(R*sin_table)
+        self.tri_soma[:,4] = x+(R*cos_table1)
+        self.tri_soma[:,5] = y+(R*sin_table1)
+
 
     def build_triangles(self):
         """Build triangle lists for the Cell model, one for the halo tracking, one for the soma tracking
@@ -158,15 +208,19 @@ class AdaptiveCell(Cell):
 
             #update the position
             # halo centroid
-            halo = npy.asarray([sh[0:2] for sh in self.shift_halo])
+            halo = self.shift_halo[:,0:2]
             # nucleus centroid
-            soma = npy.asarray([sh[0:2] for sh in self.shift_halo])
+            soma = self.shift_soma[:,0:2]
 
             self.center[:] = (1.-self.alpha) * soma.mean(axis=0) + self.alpha * halo.mean(axis=0)
             self.path[iter,:] = self.center
 
+            #update previous radii
+            self.prev_radii = npy.sqrt(npy.sum((halo-self.center)**2,axis=1))
+
             #update the triangles
-            self.build_triangles()
+            self.update_triangles()
+#            self.build_triangles()
 
 
 class Track(object):
