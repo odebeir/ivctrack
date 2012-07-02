@@ -133,13 +133,15 @@ class AdaptiveCell(Cell):
         try:
             #find radius of the current halo if it exists
             s = self.shift_halo
-            halo_xy = npy.asarray([sh[0:2] for sh in s])
+#            halo_xy = npy.asarray([sh[0:2] for sh in s])
+            halo_xy = s[:,0:2]
             r = npy.sqrt(npy.sum((halo_xy-self.center)**2,axis=1))*1.5
             r = npy.minimum(npy.maximum(r,10),self.radius_halo)
             generate_triangles(self.center[0],self.center[1],self.N,r,target=self.tri_halo)
             generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma,target=self.tri_soma)
 
         except AttributeError:
+            # initialize triangle using default radius
             generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo,target=self.tri_halo)
             generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma,target=self.tri_soma)
 

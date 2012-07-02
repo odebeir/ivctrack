@@ -30,6 +30,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 import numpy as npy
 from scipy.weave import inline
 from scipy.misc import imread
+from cache_decorators import lru_cache
 
 def dtype2ctype(array):
     """convert numpy type in C equivalent type
@@ -142,6 +143,30 @@ n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
         force = False
     return shift
 
+@lru_cache()
+def pre_compute_cos_sin_table(N):
+    """returns the cos and sin for each sector of 2pi/N
+    """
+    i = npy.arange(N)
+    c = npy.cos(i*2*npy.pi/N)
+    s = npy.sin(i*2*npy.pi/N)
+    c1 = npy.cos((i+1)*2*npy.pi/N)
+    s1 = npy.sin((i+1)*2*npy.pi/N)
+
+    return (c,s,c1,s1)
+
+@lru_cache()
+def pre_compute_cos_sin_table2(N):
+    """returns the cos and sin for each sector of 2pi/N
+    """
+    i = npy.arange(N)
+    cos_table = npy.cos(i*2*npy.pi/N)
+    sin_table = npy.sin(i*2*npy.pi/N)
+    cos_table1 = npy.cos((i+1)*2*npy.pi/N)
+    sin_table1 = npy.sin((i+1)*2*npy.pi/N)
+    cos_table_5 = npy.cos((i+.5)*2*npy.pi/N)
+    sin_table_5 = npy.sin((i+.5)*2*npy.pi/N)
+    return (cos_table,sin_table,cos_table1,sin_table1,cos_table_5,sin_table_5)
 
 def generate_triangles(x,y,N,R,target=None):
     """Returns an ensemble of triangles centered on xy
@@ -153,13 +178,13 @@ def generate_triangles(x,y,N,R,target=None):
     else:
         triangleList = target
 
-    #internal pies
-    i = npy.arange(N)
+    #external pies
+    cos_table,sin_table,cos_table1,sin_table1 = pre_compute_cos_sin_table(N)
     triangleList[:,0:2] = (x,y)
-    triangleList[:,2] = x+R*npy.cos(i*2*npy.pi/N)
-    triangleList[:,3] = y+R*npy.sin(i*2*npy.pi/N)
-    triangleList[:,4] = x+R*npy.cos((i+1)*2*npy.pi/N)
-    triangleList[:,5] = y+R*npy.sin((i+1)*2*npy.pi/N)
+    triangleList[:,2] = x+R*cos_table
+    triangleList[:,3] = y+R*sin_table
+    triangleList[:,4] = x+R*cos_table1
+    triangleList[:,5] = y+R*sin_table1
 
     return triangleList
 
@@ -173,14 +198,13 @@ def generate_inverted_triangles(x,y,N,R,target=None):
         triangleList = target
 
     #internal pies
-    angle = 2*npy.pi/N
-    i = npy.arange(N)
-    triangleList[:,0] = x-(R*npy.cos((i+.5)*angle))
-    triangleList[:,1] = y-(R*npy.sin((i+.5)*angle))
-    triangleList[:,2] = x+(R*npy.cos(i*angle))
-    triangleList[:,3] = y+(R*npy.sin(i*angle))
-    triangleList[:,4] = x+(R*npy.cos((i+1)*angle))
-    triangleList[:,5] = y+(R*npy.sin((i+1)*angle))
+    cos_table,sin_table,cos_table1,sin_table1,cos_table_5,sin_table_5 = pre_compute_cos_sin_table2(N)
+    triangleList[:,0] = x-(R*cos_table_5)
+    triangleList[:,1] = y-(R*sin_table_5)
+    triangleList[:,2] = x+(R*cos_table)
+    triangleList[:,3] = y+(R*sin_table)
+    triangleList[:,4] = x+(R*cos_table1)
+    triangleList[:,5] = y+(R*sin_table1)
     return triangleList  
       
 def testMeanshift():
