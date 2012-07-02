@@ -153,7 +153,12 @@ class AdaptiveCell(Cell):
         self.tri_soma = npy.ndarray((self.N/2,6)) # N/2 triangles for the soma
         self.prev_radii = npy.ones(N)*radius_halo
 
-        self.build_triangles()
+        self.update_triangles()
+
+    def set(self,x,y):
+        self.center[0] = x
+        self.center[1] = y
+        self.update_triangles()
 
     def update_triangles(self):
         #external pies
@@ -177,23 +182,23 @@ class AdaptiveCell(Cell):
         self.tri_soma[:,5] = y+(R*sin_table1)
 
 
-    def build_triangles(self):
-        """Build triangle lists for the Cell model, one for the halo tracking, one for the soma tracking
-        """
-        try:
-            #find radius of the current halo if it exists
-            s = self.shift_halo
-#            halo_xy = npy.asarray([sh[0:2] for sh in s])
-            halo_xy = s[:,0:2]
-            r = npy.sqrt(npy.sum((halo_xy-self.center)**2,axis=1))*1.5
-            r = npy.minimum(npy.maximum(r,10),self.radius_halo)
-            generate_triangles(self.center[0],self.center[1],self.N,r,target=self.tri_halo)
-            generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma,target=self.tri_soma)
-
-        except AttributeError:
-            # initialize triangle using default radius
-            generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo,target=self.tri_halo)
-            generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma,target=self.tri_soma)
+#    def build_triangles(self):
+#        """Build triangle lists for the Cell model, one for the halo tracking, one for the soma tracking
+#        """
+#        try:
+#            #find radius of the current halo if it exists
+#            s = self.shift_halo
+##            halo_xy = npy.asarray([sh[0:2] for sh in s])
+#            halo_xy = s[:,0:2]
+#            r = npy.sqrt(npy.sum((halo_xy-self.center)**2,axis=1))*1.5
+#            r = npy.minimum(npy.maximum(r,10),self.radius_halo)
+#            generate_triangles(self.center[0],self.center[1],self.N,r,target=self.tri_halo)
+#            generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma,target=self.tri_soma)
+#
+#        except AttributeError:
+#            # initialize triangle using default radius
+#            generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo,target=self.tri_halo)
+#            generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma,target=self.tri_soma)
 
 
     def update(self,im):
