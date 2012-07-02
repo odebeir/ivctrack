@@ -54,14 +54,16 @@ class Cell():
         self.LutB = LUT('black',exp_soma)
         self.niter = niter
         self.alpha = alpha
+        self.tri_halo = npy.ndarray((self.N,6))
+        self.tri_soma = npy.ndarray((self.N,6))
 
         self.build_triangles()
 
     def build_triangles(self):
         """Build triangle lists for the Cell model, one for the halo tracking, one for the soma tracking
         """
-        self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo)
-        self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N,self.radius_soma)
+        generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo,target=self.tri_halo)
+        generate_inverted_triangles(self.center[0],self.center[1],self.N,self.radius_soma,target=self.tri_soma)
 
     def set(self,x,y):
         self.center[0] = x
@@ -108,8 +110,22 @@ class Cell():
         return [center,halo,soma]
 
 class AdaptiveCell(Cell):
-    def __init__(self,x0,y0,**params):
-        Cell.__init__(self,x0,y0,**params)
+    def __init__(self,x0,y0,N=16,radius_halo=30,radius_soma=12,exp_halo=10,exp_soma=2,niter=10,alpha=.75):
+        #model center
+        self.center = npy.asarray((x0,y0),dtype=float)
+
+        #model parameters
+        self.N = N # N must be even
+        self.radius_halo = radius_halo
+        self.radius_soma = radius_soma
+        self.LutW = LUT('white',exp_halo)
+        self.LutB = LUT('black',exp_soma)
+        self.niter = niter
+        self.alpha = alpha
+        self.tri_halo = npy.ndarray((self.N,6))
+        self.tri_soma = npy.ndarray((self.N/2,6)) # N/2 triangles for the soma
+
+        self.build_triangles()
 
     def build_triangles(self):
         """Build triangle lists for the Cell model, one for the halo tracking, one for the soma tracking
@@ -120,12 +136,12 @@ class AdaptiveCell(Cell):
             halo_xy = npy.asarray([sh[0:2] for sh in s])
             r = npy.sqrt(npy.sum((halo_xy-self.center)**2,axis=1))*1.5
             r = npy.minimum(npy.maximum(r,10),self.radius_halo)
-            self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,r)
-            self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma)
+            generate_triangles(self.center[0],self.center[1],self.N,r,target=self.tri_halo)
+            generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma,target=self.tri_soma)
 
         except AttributeError:
-            self.tri_halo = generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo)
-            self.tri_soma = generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma)
+            generate_triangles(self.center[0],self.center[1],self.N,self.radius_halo,target=self.tri_halo)
+            generate_inverted_triangles(self.center[0],self.center[1],self.N/2,self.radius_soma,target=self.tri_soma)
 
 
     def update(self,im):

@@ -27,7 +27,6 @@ from traitsui.api import RangeEditor,ValueEditor,TableEditor,CustomEditor,TreeEd
 from traitsui.api import HGroup,VGroup,View,Group, Item
 from enable.component_editor import ComponentEditor
 from chaco.api import Plot, ArrayPlotData, jet, gray
-
 from chaco.plot_graphics_context import PlotGraphicsContext
 
 import numpy as npy
