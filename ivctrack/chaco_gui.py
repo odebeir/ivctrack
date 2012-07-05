@@ -22,7 +22,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
-from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button, Trait, Float, Enum
+from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button, Trait, Float, Enum, Bool
 from traitsui.api import RangeEditor,ValueEditor,TableEditor,CustomEditor,TreeEditor,CompoundEditor,EnumEditor
 from traitsui.api import HGroup,VGroup,View,Group, Item
 from enable.component_editor import ComponentEditor
@@ -37,6 +37,8 @@ from ivctrack.cellmodel import Cell,AdaptiveCell
 from ivctrack.reader import ZipSource,Reader
 
 from enable.api import BaseTool
+
+from pyface.timer.api import Timer
 
 from grid_assays import plot_grid
 
@@ -81,6 +83,10 @@ class ScatterPlotTraits(HasTraits):
     button = Button('Print')
     test1 = Button('Test1')
 
+    fwd = Bool(False)
+    rev = Bool(False)
+    timer = Instance(Timer)
+
     reader = Instance(Reader)
 
     frame = Range(low = 0)
@@ -111,6 +117,7 @@ class ScatterPlotTraits(HasTraits):
             ),
             Item('paramsUI',style='custom', show_label=False),
             Item('frame', editor = RangeEditor(mode = 'slider',low_name='low',high_name='high'),   show_label=False),
+            HGroup(Item('rev'),Item('fwd')),
             ),
             VGroup(Item('button', show_label=False),
             Item('test1', show_label=False),
@@ -157,6 +164,30 @@ class ScatterPlotTraits(HasTraits):
         plot.tools.append(self.cursor1)
         self.cell_update()
 
+    def edit_traits(self, *args, **kws):
+        # Start up the timer! We should do this only when the demo actually
+        # starts and not when the demo object is created.
+        self.timer = Timer(5, self.onTimer)
+        return super(ScatterPlotTraits, self).edit_traits(*args, **kws)
+
+    def configure_traits(self, *args, **kws):
+        # Start up the timer! We should do this only when the demo actually
+        # starts and not when the demo object is created.
+        self.timer = Timer(5, self.onTimer)
+        return super(ScatterPlotTraits, self).configure_traits(*args, **kws)
+
+    def onTimer(self):
+        if self.fwd:
+            if self.frame<self.reader.N()-1:
+                self.frame += 1
+            else:
+                self.fwd = False
+        if self.rev:
+            if self.frame>0:
+                self.frame -= 1
+            else:
+                self.rev = False
+
     def update_param(self):
         self.params = self.paramsUI.get_dict()
 
@@ -173,6 +204,14 @@ class ScatterPlotTraits(HasTraits):
     def _frame_changed(self):
         self.plotdata.set_data('imagedata', self.reader.moveto(self.frame))
         self.cell_update()
+
+    def _fwd_changed(self):
+        if self.fwd:
+            self.rev = False
+    def _rev_changed(self):
+        if self.rev:
+            self.fwd = False
+
 
     def cell_update(self):
         self.cell.update(self.reader.getframe())
