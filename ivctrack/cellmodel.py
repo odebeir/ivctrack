@@ -163,7 +163,7 @@ class AdaptiveCell(Cell):
     def update_triangles(self):
         #external pies
         cos_table,sin_table,cos_table1,sin_table1 = pre_compute_cos_sin_table(self.N)
-        R = self.prev_radii*1.5
+        R = self.prev_radii*1.2
         x,y = self.center
         self.tri_halo[:,0:2] = self.center
         self.tri_halo[:,2] = x+R*cos_table
@@ -357,7 +357,7 @@ def test_experiment():
 
     #mark initial cell position (may be in the middle of the sequence
     marks = import_marks('../test/data/rev_marks.csv')
-    params = {'N':12,'radius_halo':20,'radius_soma':15,'exp_halo':15,'exp_soma':2,'niter':10,'alpha':.75}
+    params = {'N':12,'radius_halo':20,'radius_soma':15,'exp_halo':15,'exp_soma':2,'niter':5,'alpha':.75}
 
     track_list = []
     for x0,y0,frame0 in marks:

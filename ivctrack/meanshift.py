@@ -56,6 +56,18 @@ def LUT(type,exp=1):
 
 meanshift_features = ['xg','yg','surf','surfalpha','totalvalue','vmax','vmin','vmean']
 
+@lru_cache()
+def find_c_code(path):
+    """search for external c-code
+    """
+    try:
+        import pkgutil
+        extra_code = pkgutil.get_data(__name__, path)
+    except ImportError:
+        import pkg_resources
+        extra_code = pkg_resources.resource_string(__name__, path)
+    return extra_code
+
 def meanshift(ima,triangleList,offset_x,offset_y,lut=None):
     """compute the meanshift for each triangle in the triangleList
 
@@ -120,26 +132,20 @@ n = compute_g(IN,sizex,sizey,off_x,off_y,TRIANGLE,OUT,LUT);
 
 """
 
-    try:
-        import pkgutil
-        extra_code = pkgutil.get_data(__name__, 'c-code/meanshift.c')
-    except ImportError:
-        import pkg_resources
-        extra_code = pkg_resources.resource_string(__name__, 'c-code/meanshift.c')
+    extra_code = find_c_code('c-code/meanshift.c')
 
     if lut is None:
         lut = npy.arange(256,dtype = 'float64')
 
     n = triangleList.shape[0]
-    shift = npy.zeros((n,8),dtype = 'float64', order='C')
-    out = npy.zeros(8,dtype = 'float64', order='C')
+    shift = npy.ndarray((n,8),dtype = 'float64', order='C')
+    out = npy.ndarray(8,dtype = 'float64', order='C')
 
     force = False
     for i in range(n):
         triangle = triangleList[i,:]
-        out[:] = 0.0
         inline(code, ['ima','out','triangle','lut','offset_x','offset_y'],support_code=extra_code,force=force)
-        shift[i,:] = npy.copy(out)
+        shift[i,:] = out
         force = False
     return shift
 
