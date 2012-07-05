@@ -34,6 +34,7 @@ import h5py
 #local imports
 from meanshift import LUT,generate_triangles,generate_inverted_triangles,meanshift,meanshift_features
 from reader import ZipSource,Reader
+from scipy.weave import blitz
 
 
 class Cell():
@@ -153,6 +154,24 @@ class AdaptiveCell(Cell):
         self.tri_soma = npy.ndarray((self.N/2,6)) # N/2 triangles for the soma
         self.prev_radii = npy.ones(N)*radius_halo
 
+        cos_table,sin_table,cos_table1,sin_table1 = pre_compute_cos_sin_table(self.N)
+
+        self.def_tri_halo = npy.zeros_like(self.tri_halo)
+        self.def_tri_halo[:,0:2] = self.center
+        self.def_tri_halo[:,2] = cos_table
+        self.def_tri_halo[:,3] = sin_table
+        self.def_tri_halo[:,4] = cos_table1
+        self.def_tri_halo[:,5] = sin_table1
+
+        cos_table,sin_table,cos_table1,sin_table1,cos_table_5,sin_table_5 = pre_compute_cos_sin_table2(self.N/2)
+
+        self.def_tri_soma = npy.zeros_like(self.tri_soma)
+        self.def_tri_soma[:,0] = -cos_table_5
+        self.def_tri_soma[:,1] = -sin_table_5
+        self.def_tri_soma[:,2] = cos_table
+        self.def_tri_soma[:,3] = sin_table
+        self.def_tri_soma[:,4] = cos_table1
+        self.def_tri_soma[:,5] = sin_table1
         self.update_triangles()
 
     def set(self,x,y):
@@ -162,24 +181,18 @@ class AdaptiveCell(Cell):
 
     def update_triangles(self):
         #external pies
-        cos_table,sin_table,cos_table1,sin_table1 = pre_compute_cos_sin_table(self.N)
         R = self.prev_radii*1.2
         x,y = self.center
+        self.tri_halo[:,:] = self.def_tri_halo
         self.tri_halo[:,0:2] = self.center
-        self.tri_halo[:,2] = x+R*cos_table
-        self.tri_halo[:,3] = y+R*sin_table
-        self.tri_halo[:,4] = x+R*cos_table1
-        self.tri_halo[:,5] = y+R*sin_table1
+        self.tri_halo[:,2:6] = self.tri_halo[:,2:6] * R[:,npy.newaxis]
+        self.tri_halo[:,2:6] += npy.asarray([x,y,x,y])
 
         #internal pies
-        cos_table,sin_table,cos_table1,sin_table1,cos_table_5,sin_table_5 = pre_compute_cos_sin_table2(self.N/2)
+        self.tri_soma[:,:] = self.def_tri_soma
         R = self.radius_soma
-        self.tri_soma[:,0] = x-(R*cos_table_5)
-        self.tri_soma[:,1] = y-(R*sin_table_5)
-        self.tri_soma[:,2] = x+(R*cos_table)
-        self.tri_soma[:,3] = y+(R*sin_table)
-        self.tri_soma[:,4] = x+(R*cos_table1)
-        self.tri_soma[:,5] = y+(R*sin_table1)
+        self.tri_soma[:,:] = self.tri_soma[:,:]*R
+        self.tri_soma[:,:] += npy.asarray([x,y,x,y,x,y])
 
     def update(self,im):
         """Update cell position with respect to a given image
