@@ -34,7 +34,6 @@ import h5py
 #local imports
 from meanshift import LUT,generate_triangles,generate_inverted_triangles,meanshift,meanshift_features
 from reader import ZipSource,Reader
-from scipy.weave import blitz
 
 
 class Cell():
@@ -181,7 +180,7 @@ class AdaptiveCell(Cell):
 
     def update_triangles(self):
         #external pies
-        R = self.prev_radii*1.2
+        R = self.prev_radii*1.5
         x,y = self.center
         self.tri_halo[:,:] = self.def_tri_halo
         self.tri_halo[:,0:2] = self.center
@@ -210,17 +209,23 @@ class AdaptiveCell(Cell):
             # nucleus centroid
             soma = self.shift_soma[:,0:2]
 
-            self.center[:] = (1.-self.alpha) * soma.mean(axis=0) + self.alpha * halo.mean(axis=0)
+            halo_mean = halo.mean(axis=0)
+            soma_mean = soma.mean(axis=0)
+
+            self.center[:] = (1.-self.alpha) * soma_mean + self.alpha * halo_mean
             self.path[iter,:] = self.center
 
             #update previous radii
             MaxRadius = self.radius_halo
             MinRadius = self.radius_soma
             self.prev_radii = npy.maximum(npy.minimum(npy.sqrt(npy.sum((halo-self.center)**2,axis=1)),MaxRadius),MinRadius)
+            #filter previous radii
+            r1 = npy.roll(self.prev_radii,-1)
+            r2 = npy.roll(self.prev_radii,+1)
+            self.prev_radii = .5*(self.prev_radii + .5*r1 + .5*r2)
 
             #update the triangles
             self.update_triangles()
-#            self.build_triangles()
 
 
 class Track(object):
@@ -255,7 +260,6 @@ class Track(object):
                 self.records[frame] = self.cell.rec()
                 self.frame = frame
                 self.frame_range[0] = self.frame
-
 
     def export_to_hdf5(self,hdf5_group):
         """write the track results into the given HDF5 group
