@@ -366,14 +366,14 @@ def test_experiment():
     """Test function: create an Experiment object for a sequence, data are saved in HDF5 file
     """
     #define sequence source
-    datazip_filename = '../test/data/seq0_extract.zip'
-#    datazip_filename = '../test/data/seq0.zip'
+#    datazip_filename = '../test/data/seq0_extract.zip'
+    datazip_filename = '../test/data/seq0.zip'
     reader = Reader(ZipSource(datazip_filename))
 
     experiment = Experiment(reader,exp_name='Test')
 
     #mark initial cell position (may be in the middle of the sequence
-    marks = import_marks('../test/data/rev_marks.csv')
+    marks = import_marks('../test/data/new_marks.csv')
     params = {'N':12,'radius_halo':20,'radius_soma':15,'exp_halo':15,'exp_soma':2,'niter':5,'alpha':.75}
 
     track_list = []
@@ -383,7 +383,7 @@ def test_experiment():
 
     #process the tracking
     experiment.do_tracking('rev')
-    experiment.do_tracking('fwd')
+#    experiment.do_tracking('fwd')
 
     #save data to file
     experiment.save_hdf5('../test/temp/test_rev.hdf5')

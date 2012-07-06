@@ -40,7 +40,7 @@ from enable.api import BaseTool
 
 from pyface.timer.api import Timer
 
-from grid_assays import plot_grid
+from grid_assays import plot_grid,get_marks
 
 
 class AutoParam(HasTraits):
@@ -245,14 +245,22 @@ class ScatterPlotTraits(HasTraits):
         """seach the convergence point for a grid af initial starting points
         plots the results (MPL)
         """
-        plot_grid(bg=self.reader.getframe(),model=self.model,params=self.params)
+#        plot_grid(bg=self.reader.getframe(),model=self.model,params=self.params)
+        t = self.reader.head
+        xy = get_marks(bg=self.reader.getframe())
+        print xy,t
+        fid = open('../test/temp/new_marks.csv','w+t')
+        for x,y in xy:
+            fid.write('%f,%f,%d\n'%(x,y,t))
+        del fid
+
 
 
 if __name__ == "__main__":
 
 
-#    datazip_filename = '../test/data/seq0.zip'
-    datazip_filename = '../test/data/seq0_extract.zip'
+    datazip_filename = '../test/data/seq0.zip'
+#    datazip_filename = '../test/data/seq0_extract.zip'
 #    datazip_filename = '../test/data/u373s08127ct1.zip'
 
     reader = Reader(ZipSource(datazip_filename))

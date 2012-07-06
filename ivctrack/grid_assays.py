@@ -40,6 +40,14 @@ from enable.api import BaseTool
 import matplotlib.pyplot as plt
 
 
+def get_marks(bg):
+    """open an interactive plot and wait for cell marks
+    """
+    fig = plt.figure()
+    plt.imshow(bg)
+    xy = plt.ginput(n=0)
+    plt.close(fig)
+    return xy
 
 def plot_grid(bg,model,params):
     """seach the convergence point for a grid af initial starting points
