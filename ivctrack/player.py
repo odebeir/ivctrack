@@ -30,9 +30,9 @@ import numpy as npy
 
 from helpers import timeit
 
-from ivctrack.reader import ZipSource,Reader,DumbSource
-from ivctrack.cellmodel import Cell
-from ivctrack.mpl_ui import CellUi,test_polygon
+from reader import ZipSource,Reader,DumbSource
+from cellmodel import Cell
+from mpl_ui import CellUi,test_polygon
 
 import h5py
 
@@ -272,12 +272,10 @@ class InteractivePlayer(HasTraits):
         self.update()
 
 #=================================================================================================
-def test_player():
+def test_player(datazip_filename,hdf5filename):
     """reopen an HDF5 file
     """
-    datazip_filename = '../test/data/seq0.zip'
-#    datazip_filename = '../test/data/seq0_extract.zip'
-    hdf5filename = '../test/temp/test_rev.hdf5'
+#    datazip_filename = '../test/data/seq0.zip'
 
     reader = Reader(ZipSource(datazip_filename))
 #    reader = Reader(DumbSource())
@@ -290,4 +288,4 @@ def test_player():
 
 if __name__=='__main__':
 
-    test_player()
+    test_player(datazip_filename = '../test/data/seq0_extract.zip', hdf5filename = '../test/temp/test_fwd.hdf5')

@@ -362,18 +362,17 @@ def import_marks(filename):
         marks.append((float(row[0]),float(row[1]),float(row[2])))
     return npy.asarray(marks)
 
-def test_experiment():
+def test_experiment(datazip_filename,marks_filename,hdf5_filename,dir='fwd'):
     """Test function: create an Experiment object for a sequence, data are saved in HDF5 file
     """
     #define sequence source
-#    datazip_filename = '../test/data/seq0_extract.zip'
-    datazip_filename = '../test/data/seq0.zip'
+#    datazip_filename = '../test/data/seq0.zip'
     reader = Reader(ZipSource(datazip_filename))
 
     experiment = Experiment(reader,exp_name='Test')
 
     #mark initial cell position (may be in the middle of the sequence
-    marks = import_marks('../test/data/new_marks.csv')
+    marks = import_marks(marks_filename)
     params = {'N':12,'radius_halo':20,'radius_soma':15,'exp_halo':15,'exp_soma':2,'niter':5,'alpha':.75}
 
     track_list = []
@@ -382,17 +381,18 @@ def test_experiment():
         experiment.add_track(t)
 
     #process the tracking
-    experiment.do_tracking('rev')
-#    experiment.do_tracking('fwd')
+#    experiment.do_tracking('rev')
+    experiment.do_tracking(dir)
 
     #save data to file
-    experiment.save_hdf5('../test/temp/test_rev.hdf5')
+    experiment.save_hdf5(hdf5_filename)
 
 if __name__ == "__main__":
 
     import cProfile
 
-    cProfile.run('test_experiment()', '../test/temp/expprof')
+    cProfile.run("test_experiment(datazip_filename='../test/data/seq0_extract.zip',marks_filename='../test/data/fwd_marks.csv',hdf5_filename='../test/temp/test_fwd.hdf5')",
+        '../test/temp/expprof')
 
 
     import pstats

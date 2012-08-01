@@ -15,9 +15,9 @@ from matplotlib.artist import Artist
 import numpy as npy
 from scipy.misc import imread
 
-from ivctrack.meanshift import LUT,generate_triangles,generate_inverted_triangles,meanshift,meanshift_features
-from ivctrack.reader import ZipSource,Reader
-from ivctrack.helpers import make_movie,timeit
+from meanshift import LUT,generate_triangles,generate_inverted_triangles,meanshift,meanshift_features
+from reader import ZipSource,Reader
+from helpers import make_movie,timeit
 
 from time import sleep
 import h5py
