@@ -58,7 +58,7 @@ if __name__ == '__main__':
     parser_track = subparsers.add_parser('track', help='track a zipped sequence file using marks',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser_track.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
-    parser_track.add_argument("--marks", type=str,help="initial tracking positions (.csv)",default='nomarks.csv')
+    parser_track.add_argument("--marks", type=str,help="initial tracking positions (.csv)",default='defmarks.csv')
     parser_track.add_argument("--dir", choices=['fwd','rev','both'],help="tracking direction",default='fwd')
     parser_track.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
     parser_track.set_defaults(mode='track')
