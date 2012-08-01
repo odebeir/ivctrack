@@ -81,7 +81,7 @@ class ScatterPlotTraits(HasTraits):
     paramsUI = Instance(AutoParam)
 
     button = Button('Print')
-    test1 = Button('Test1')
+    create_marks = Button('create marks')
 
     fwd = Bool(False)
     rev = Bool(False)
@@ -120,7 +120,7 @@ class ScatterPlotTraits(HasTraits):
             HGroup(Item('rev'),Item('fwd')),
             ),
             VGroup(Item('button', show_label=False),
-            Item('test1', show_label=False),
+            Item('create_marks', show_label=False),
             Item('plot', editor=ComponentEditor(), show_label=False),
             orientation = "vertical"),
             ),
@@ -241,7 +241,7 @@ class ScatterPlotTraits(HasTraits):
     def _button_fired(self):
         save_plot(self.plot,'../test/temp/fig.png',1028,768)
 
-    def _test1_fired(self):
+    def _create_marks_fired(self):
         """seach the convergence point for a grid af initial starting points
         plots the results (MPL)
         """
@@ -249,10 +249,12 @@ class ScatterPlotTraits(HasTraits):
         t = self.reader.head
         xy = get_marks(bg=self.reader.getframe())
         print xy,t
-        fid = open('../test/temp/new_marks.csv','w+t')
+        filename = '../test/temp/new_marks.csv'
+        fid = open(filename,'w+t')
         for x,y in xy:
             fid.write('%f,%f,%d\n'%(x,y,t))
         del fid
+        print 'marks saved in ',filename
 
 def test_gui(datazip_filename):
     reader = Reader(ZipSource(datazip_filename))

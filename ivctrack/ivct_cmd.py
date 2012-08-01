@@ -45,8 +45,27 @@ def gui(source):
 
 def plot(hdf5_filename):
     from measurement import test_plot
-
     test_plot(hdf5_filename)
+
+def set_marks(datazip_filename,frame,mark_filename):
+    from reader import Reader,ZipSource
+    import matplotlib.pyplot as plt
+
+    reader = Reader(ZipSource(datazip_filename))
+    print reader
+    reader.moveto(frame)
+    bg = reader.getframe()
+    fig = plt.figure()
+    plt.imshow(bg)
+    xy = plt.ginput(n=0)
+    plt.close(fig)
+    t = reader.head
+    print xy,t
+    fid = open(mark_filename,'w+t')
+    for x,y in xy:
+        fid.write('%f,%f,%d\n'%(x,y,t))
+    del fid
+    print 'marks saved in ',mark_filename
 
 if __name__ == '__main__':
     import argparse
@@ -55,10 +74,18 @@ if __name__ == '__main__':
     subparsers = parser.add_subparsers( title='subcommands',
                                         description='valid subcommands',
                                         help='additional help (e.g. type "ivct_cmd track --help").')
+
     parser_test = subparsers.add_parser('test', help='test a zipped sequence file',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser_test.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
     parser_test.set_defaults(mode='test')
+
+    parser_mark = subparsers.add_parser('mark', help='marks the n-th frame of a zipped sequence file, save marks in a .csv file',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser_mark.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
+    parser_mark.add_argument("--marks", type=str,help="marks file (.csv)",default='marks.csv')
+    parser_mark.add_argument("--frame", type=int,help="frame where to place marks (-1 is last frame etc)",default=1)
+    parser_mark.set_defaults(mode='mark')
 
     parser_track = subparsers.add_parser('track', help='track a zipped sequence file using marks',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -90,13 +117,13 @@ if __name__ == '__main__':
     print 'MODE:',args.mode
 
     if args.mode == 'test':
-        if args.seq is not None:
-            print args.seq
-            test_source(args.seq)
-        else:
-            print '--seq needed'
-            parser.print_usage()
-            exit(10)
+        print args.seq
+        test_source(args.seq)
+
+    if args.mode == 'mark':
+        print 'interactive marks setting'
+        print
+        set_marks(datazip_filename=args.seq,mark_filename=args.marks,frame=args.frame)
 
     if args.mode == 'track':
         if args.seq is not None:
