@@ -39,23 +39,44 @@ def play(source,hdf5):
     from player import test_player
     test_player(datazip_filename=source,hdf5filename=hdf5)
 
+def gui(source):
+    from chaco_gui import test_gui
+    test_gui(source)
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(prog='IVCT_CMD',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     #positional arguments
-    parser.add_argument("mode", type=str,help="type of action to be done : test/track")
-    #optional arguments
-    parser.add_argument("--seq", type=str,help="image sequence (.zip)")
-    parser.add_argument("--marks", type=str,help="initial tracking positions (.csv)")
-    parser.add_argument("--dir", choices=['fwd','rev','both'],help="tracking direction",default='fwd')
-    parser.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
-    parser.add_argument("--verbose", help="increase output verbosity",action="store_true")
+    subparsers = parser.add_subparsers( title='subcommands',
+                                        description='valid subcommands',
+                                        help='additional help')
+    parser_test = subparsers.add_parser('test', help='test a zipped sequence file',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser_test.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
+    parser_test.set_defaults(mode='test')
+
+    parser_track = subparsers.add_parser('track', help='track a zipped sequence file using marks',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser_track.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
+    parser_track.add_argument("--marks", type=str,help="initial tracking positions (.csv)",default='nomarks.csv')
+    parser_track.add_argument("--dir", choices=['fwd','rev','both'],help="tracking direction",default='fwd')
+    parser_track.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
+    parser_track.set_defaults(mode='track')
+
+    parser_play = subparsers.add_parser('play', help='play a tracked sequence',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser_play.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
+    parser_play.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
+    parser_play.set_defaults(mode='play')
+
+    parser_gui = subparsers.add_parser('gui', help='display a graphical interactive view for model parameters fitting',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser_gui.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
+    parser_gui.set_defaults(mode='gui')
+
     args = parser.parse_args()
 
     print 'MODE:',args.mode
-
-    if args.verbose:
-        print 'verbose mode'
 
     if args.mode == 'test':
         if args.seq is not None:
@@ -75,22 +96,8 @@ if __name__ == '__main__':
             parser.print_usage()
             exit(1)
 
-        if args.marks is not None:
-            print 'marks=',args.marks
-            test_marks(args.marks)
-        else:
-            print '--marks needed'
-            parser.print_usage()
-            exit(2)
-
-        if args.hdf5 is not None:
-            print 'hdf5=',args.hdf5
-        else:
-            print '--hdf5 needed'
-            parser.print_usage()
-            exit(3)
-
         print 'dir=',args.dir
+        track(source=args.seq,dir=args.dir,marks=args.marks,hdf5=args.hdf5)
 
     if args.mode == 'play':
         if args.seq is not None:
@@ -109,3 +116,14 @@ if __name__ == '__main__':
             exit(3)
 
         play(args.seq,args.hdf5)
+
+    if args.mode == 'gui':
+        if args.seq is not None:
+            print 'source=',args.seq
+            test_source(args.seq)
+        else:
+            print '--seq needed'
+            parser.print_usage()
+            exit(1)
+
+        gui(args.seq)

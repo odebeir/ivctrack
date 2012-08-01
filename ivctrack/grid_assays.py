@@ -33,8 +33,8 @@ import numpy as npy
 
 from chaco.tools.api import PanTool, ZoomTool
 
-from ivctrack.cellmodel import Cell
-from ivctrack.reader import ZipSource,Reader
+from cellmodel import Cell
+from reader import ZipSource,Reader
 
 from enable.api import BaseTool
 import matplotlib.pyplot as plt

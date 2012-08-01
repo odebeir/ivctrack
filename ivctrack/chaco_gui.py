@@ -33,8 +33,8 @@ import numpy as npy
 
 from chaco.tools.api import PanTool, ZoomTool
 
-from ivctrack.cellmodel import Cell,AdaptiveCell
-from ivctrack.reader import ZipSource,Reader
+from cellmodel import Cell,AdaptiveCell
+from reader import ZipSource,Reader
 
 from enable.api import BaseTool
 
@@ -254,6 +254,11 @@ class ScatterPlotTraits(HasTraits):
             fid.write('%f,%f,%d\n'%(x,y,t))
         del fid
 
+def test_gui(datazip_filename):
+    reader = Reader(ZipSource(datazip_filename))
+    params = {'N':16,'radius_halo':23,'radius_soma':12,'exp_halo':20,'exp_soma':2,'niter':10,'alpha':.75}
+    demo = ScatterPlotTraits(reader=reader,params=params,model=AdaptiveCell)
+    demo.configure_traits()
 
 
 if __name__ == "__main__":
