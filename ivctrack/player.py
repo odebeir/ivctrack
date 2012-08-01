@@ -32,7 +32,6 @@ from helpers import timeit
 
 from reader import ZipSource,Reader,DumbSource
 from cellmodel import Cell
-from mpl_ui import CellUi,test_polygon
 
 import h5py
 
@@ -104,10 +103,6 @@ class Tracker(HasTraits):
             )
     def __init__(self):
         self.model = Cell(0,0)
-        self.ui = CellUi(self.model)
-
-    def draw(self,ax):
-        self.ui.draw(ax)
 
 class InteractivePlayer(HasTraits):
 
@@ -226,8 +221,6 @@ class InteractivePlayer(HasTraits):
 
 
     def update_bg(self):
-        if self.p is None:
-            self.p = test_polygon(self.figure.axes[0])
         im = self.reader.getframe()
         self.figure.axes[0]
         self.figure.axes[0].images=[]
