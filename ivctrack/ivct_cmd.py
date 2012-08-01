@@ -54,7 +54,7 @@ if __name__ == '__main__':
     #positional arguments
     subparsers = parser.add_subparsers( title='subcommands',
                                         description='valid subcommands',
-                                        help='additional help')
+                                        help='additional help (e.g. type "ivct_cmd track --help").')
     parser_test = subparsers.add_parser('test', help='test a zipped sequence file',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser_test.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
