@@ -271,15 +271,8 @@ def direction_feature_extraction(c_data):
 
     return (feat_name,measures)
 
-
-if __name__=='__main__':
-
-    import doctest
-
-    print doctest.testmod()
-
-    #extract center data from HDF5
-    hdf5_filename = '../test/data/test_rev.hdf5'
+def test_plot(hdf5_filename):
+#extract center data from HDF5
     c_feat,c_data = get_hdf5_data(hdf5_filename,fields=['center'])
 
     #compute speed features
@@ -304,15 +297,26 @@ if __name__=='__main__':
         x0 = xy[0,0]
         y0 = xy[0,1]
         offset_x = s_data[r,6]*10000
-#        offset_x = p_length*10
-#        offset_x = s_data[r,3]*100
-#        offset_x = d_data[r,3]*10
+        #        offset_x = p_length*10
+        #        offset_x = s_data[r,3]*100
+        #        offset_x = d_data[r,3]*10
         offset_y = d_data[r,3]*10
         plt.plot(xy[:,0]-x0+offset_x,xy[:,1]-y0+offset_y)
         fxy = filter(xy,sigma=1.)
         plt.plot(fxy[:,0]-x0+offset_x,fxy[:,1]-y0+offset_y)
         plt.plot(offset_x,offset_y,'+k')
-#        plt.text(xy[0,0]-x0+offset_x,xy[0,1]-y0+offset_y,'%.3f(%.3f)'%(d_data[r,0],d_data[r,1]))
+    #        plt.text(xy[0,0]-x0+offset_x,xy[0,1]-y0+offset_y,'%.3f(%.3f)'%(d_data[r,0],d_data[r,1]))
 
-    plt.show()
+#    plt.show()
 
+
+if __name__=='__main__':
+
+    import doctest
+
+    print doctest.testmod()
+
+    #extract center data from HDF5
+    hdf5_filename = '../test/data/test_rev.hdf5'
+
+    test_plot(hdf5_filename)

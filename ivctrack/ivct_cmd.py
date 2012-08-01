@@ -43,6 +43,11 @@ def gui(source):
     from chaco_gui import test_gui
     test_gui(source)
 
+def plot(hdf5_filename):
+    from measurement import test_plot
+
+    test_plot(hdf5_filename)
+
 if __name__ == '__main__':
     import argparse
     parser = argparse.ArgumentParser(prog='IVCT_CMD',formatter_class=argparse.ArgumentDefaultsHelpFormatter)
@@ -73,6 +78,12 @@ if __name__ == '__main__':
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser_gui.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
     parser_gui.set_defaults(mode='gui')
+
+    parser_plot = subparsers.add_parser('plot', help='plot a tracked sequence',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser_plot.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
+    parser_plot.set_defaults(mode='plot')
+
 
     args = parser.parse_args()
 
@@ -127,3 +138,8 @@ if __name__ == '__main__':
             exit(1)
 
         gui(args.seq)
+
+    if args.mode == 'plot':
+
+        plot(args.hdf5)
+
