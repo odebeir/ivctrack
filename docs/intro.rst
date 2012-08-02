@@ -52,12 +52,9 @@ The tracking results are saved in a unique HDF5 file, which offers the possibili
 a hierarchical structure. This option enable the interoperability with lot of other languages for which an HDF5 interface
 exists.
 
-.. only:: html
-
-    .. figure:: image/screenshot2.png
+.. image:: image/screenshot2.*
         :scale: 70 %
         :alt: HDF5 viewer
         :align: left
-        :figwidth: 45%
 
-        Tracking results are available in a HDF5 document
+Tracking results are available in a HDF5 document

@@ -5,15 +5,10 @@
 
 Welcome to IVCTRACK documentation.
 
-.. only:: html
-
-    .. figure:: image/screenshot1.png
+.. image:: image/screenshot1.*
         :scale: 70 %
         :alt: in vitro cell tracking
         :align: right
-        :figwidth: 45%
-
-        Example of the tracking model adjusted on a cell observed under phase contrast microscopy.
 
 IVCTRACK stands for *in vitro cell tracking toolbox*.
 
