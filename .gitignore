@@ -54,4 +54,8 @@ docs/_build/*
 build/*
 MANIFEST
 dist/*
+small.hdf5
+tracks.hdf5
+parameters.json
+marks.csv
 
