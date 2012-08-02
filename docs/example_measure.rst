@@ -13,7 +13,9 @@ Cell speed analysis : average speed, MRDO and hull speed :
 
     In [9]: hdf5_filename = '../test/data/test_rev.hdf5'
 
-    In [29]: feat,data = speed_feature_extraction(hdf5_filename)
+    In [10]: c_feat,c_data = get_hdf5_data(hdf5_filename,fields=['center'])
+
+    In [29]: feat,data = speed_feature_extraction(c_data)
 
     In [30]: print feat
 

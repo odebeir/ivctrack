@@ -309,12 +309,38 @@ def test_plot(hdf5_filename):
 
 #    plt.show()
 
+def test_measures():
+    import matplotlib.pyplot as plt
+    from hdf5_read import get_hdf5_data
+
+    from measurement import speed_feature_extraction
+
+    hdf5_filename = '../test/data/test_rev.hdf5'
+    c_feat,c_data = get_hdf5_data(hdf5_filename,fields=['center'])
+
+    #compute speed features
+    feat,data = speed_feature_extraction(c_data)
+
+    print feat
+    plt.scatter(data[:,1],data[:,3])
+    plt.xlabel('avg speed')
+    plt.ylabel('hull speed')
+    plt.draw()
+
+    plt.figure()
+
+    plt.hist(data[:,1:4])
+
+    plt.legend(['avg','mrdo','hull speed'])
+    plt.show()
 
 if __name__=='__main__':
 
     import doctest
 
     print doctest.testmod()
+
+    test_measures()
 
     #extract center data from HDF5
     hdf5_filename = '../test/data/test_rev.hdf5'
