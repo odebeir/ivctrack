@@ -49,6 +49,7 @@ def get_marks(bg):
     plt.close(fig)
     return xy
 
+
 def plot_grid(bg,model,params):
     """seach the convergence point for a grid af initial starting points
     plots the results (MPL)

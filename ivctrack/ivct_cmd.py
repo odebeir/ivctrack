@@ -31,9 +31,12 @@ def test_marks(filename):
     m = import_marks(filename)
     print m
 
-def track(source,dir,marks,hdf5):
+def track(source,dir,marks,hdf5,params):
+    import json
+    s = json.loads(open(params).read())
+    print s
     from cellmodel import test_experiment
-    test_experiment(datazip_filename=source,marks_filename=marks,hdf5_filename=hdf5,dir=dir)
+    test_experiment(datazip_filename=source,marks_filename=marks,hdf5_filename=hdf5,dir=dir,params=s)
 
 def play(source,hdf5):
     from player import test_player
@@ -93,12 +96,13 @@ if __name__ == '__main__':
     parser_track.add_argument("--marks", type=str,help="initial tracking positions (.csv)",default='defmarks.csv')
     parser_track.add_argument("--dir", choices=['fwd','rev','both'],help="tracking direction",default='fwd')
     parser_track.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
+    parser_track.add_argument("--params", type=str,help="parameters file (.json)",default='parameters.json')
     parser_track.set_defaults(mode='track')
 
     parser_play = subparsers.add_parser('play', help='play a tracked sequence',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
     parser_play.add_argument("--seq", type=str,help="image sequence (.zip)",required=True)
-    parser_play.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
+    parser_play.add_argument("--hdf5", type=str,help="HDF5 filepath",default='tracks.hdf5')
     parser_play.set_defaults(mode='play')
 
     parser_gui = subparsers.add_parser('gui', help='display a graphical interactive view for model parameters fitting',
@@ -108,8 +112,13 @@ if __name__ == '__main__':
 
     parser_plot = subparsers.add_parser('plot', help='plot a tracked sequence',
         formatter_class=argparse.ArgumentDefaultsHelpFormatter)
-    parser_plot.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
+    parser_plot.add_argument("--hdf5", type=str,help="HDF5 filepath",default='tracks.hdf5')
     parser_plot.set_defaults(mode='plot')
+
+    parser_export = subparsers.add_parser('export', help='export a tracked sequence',
+        formatter_class=argparse.ArgumentDefaultsHelpFormatter)
+    parser_export.add_argument("--hdf5", type=str,help="HDF5 filepath",default='tracks.hdf5')
+    parser_export.set_defaults(mode='export')
 
 
     args = parser.parse_args()
@@ -133,9 +142,8 @@ if __name__ == '__main__':
             print '--seq needed'
             parser.print_usage()
             exit(1)
-
         print 'dir=',args.dir
-        track(source=args.seq,dir=args.dir,marks=args.marks,hdf5=args.hdf5)
+        track(source=args.seq,dir=args.dir,marks=args.marks,hdf5=args.hdf5,params=args.params)
 
     if args.mode == 'play':
         if args.seq is not None:
@@ -152,7 +160,6 @@ if __name__ == '__main__':
             print '--hdf5 needed'
             parser.print_usage()
             exit(3)
-
         play(args.seq,args.hdf5)
 
     if args.mode == 'gui':
@@ -163,10 +170,10 @@ if __name__ == '__main__':
             print '--seq needed'
             parser.print_usage()
             exit(1)
-
         gui(args.seq)
 
     if args.mode == 'plot':
-
         plot(args.hdf5)
 
+    if args.mode == 'export':
+        print 'not implemented yet'

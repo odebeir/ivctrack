@@ -362,7 +362,7 @@ def import_marks(filename):
         marks.append((float(row[0]),float(row[1]),float(row[2])))
     return npy.asarray(marks)
 
-def test_experiment(datazip_filename,marks_filename,hdf5_filename,dir='fwd'):
+def test_experiment(datazip_filename,marks_filename,hdf5_filename,dir='fwd',params=None):
     """Test function: create an Experiment object for a sequence, data are saved in HDF5 file
     """
     #define sequence source
@@ -373,7 +373,8 @@ def test_experiment(datazip_filename,marks_filename,hdf5_filename,dir='fwd'):
 
     #mark initial cell position (may be in the middle of the sequence
     marks = import_marks(marks_filename)
-    params = {'N':12,'radius_halo':20,'radius_soma':15,'exp_halo':15,'exp_soma':2,'niter':5,'alpha':.75}
+    if params is None:
+        params = {'N':12,'radius_halo':20,'radius_soma':15,'exp_halo':15,'exp_soma':2,'niter':5,'alpha':.75}
 
     track_list = []
     for x0,y0,frame0 in marks:
