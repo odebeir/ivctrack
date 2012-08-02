@@ -2,6 +2,21 @@
 Modules
 ===========
 
+Command line module
+-----------------------------
+
+This module implement basically the command IVCT_CMD which provides an direct interface to the main tracking functions.
+
+.. program-output:: python -V
+
+test
+
+
+.. automodule:: ivctrack.ivct_cmd
+   :members:
+   :undoc-members:
+
+
 Reader module
 -----------------------------
 
