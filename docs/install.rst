@@ -17,6 +17,9 @@ and
 
 Anecdotally,  functions `mencoder <http://www.mplayerhq.hu/design7/news.html>`_ is used to make a movie from separate .png files.
 
+`sphinxcontrib.programoutput – Insert command output <http://packages.python.org/sphinxcontrib-programoutput/>`_
+
+
 
 Download
 -----------------------------
