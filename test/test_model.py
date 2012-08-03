@@ -85,7 +85,7 @@ def test_static():
 
     plt.show()
 
-def test_N(n_list=[3,5,8,16,32]):
+def test_N(n_list=[3,5,8,16,32],model=Cell):
     """Test function: illustrate the N parameter (#of pies of the model)
     """
     im = imread(os.path.join(os.path.dirname(__file__),'../test/data/exp0001.jpg'))
@@ -94,8 +94,8 @@ def test_N(n_list=[3,5,8,16,32]):
         fig = plt.figure()
         ax = fig.add_subplot(111)
         ax.imshow(im, interpolation='nearest')
-        params = {'N':N,'radius_halo':30,'radius_soma':15}
-        cell_list = [ Cell(x0,y0,**params)  for x0,y0 in cellLocations ]
+        params = {'N':N,'radius_halo':25,'radius_soma':10}
+        cell_list = [ model(x0,y0,**params)  for x0,y0 in cellLocations ]
         for c in cell_list:
             c.update(im)
             CellUi(c,ax).draw(ax)

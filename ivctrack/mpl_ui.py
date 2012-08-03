@@ -38,7 +38,7 @@ class CellUi(object):
         for tri in self.cell.tri_soma:
             self.h.append(ax.plot(npy.take(tri,idxx),npy.take(tri,idxy),color = [.5,.5,.5]))
         for tri in self.cell.tri_halo:
-            self.h.append(ax.plot(tri[0:6:2],tri[1:6:2],color = [.5,.5,.5]))
+            self.h.append(ax.plot(npy.take(tri,idxx),npy.take(tri,idxy),color = [.5,.5,.5]))
 
     def draw_centroids(self,ax):
         """Draws all the centroids in the given Matplotlib axis (ax)
