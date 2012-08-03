@@ -26,6 +26,8 @@ Download
 
 Getting the distribution:
 
+* download the distribution file :download:`ivctrack-0.1.2.tar.gz <../dist/ivctrack-0.1.2.tar.gz>`
+
 * download the distribution file :download:`ivctrack-0.1.1.tar.gz <../dist/ivctrack-0.1.1.tar.gz>`
 
 * download the distribution file :download:`ivctrack-0.1.0.tar.gz <../dist/ivctrack-0.1.0.tar.gz>`

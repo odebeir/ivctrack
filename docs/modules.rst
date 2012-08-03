@@ -5,7 +5,7 @@ Modules
 Command line module
 -----------------------------
 
-This module implement basically the command IVCT_CMD which provides an direct interface to the main tracking functions.
+This module implement basically the command IVCT_CMD which provides a direct interface to the main tracking functions.
 
 Generic help
 

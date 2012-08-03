@@ -14,6 +14,7 @@ Examples
 .. toctree::
     :maxdepth: 2
 
+    example_cmd.rst
     example_browse.rst
     example_update.rst
     example_experiment.rst
