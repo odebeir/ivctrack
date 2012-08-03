@@ -197,8 +197,59 @@ def test():
             ax.add_line(line)
     plt.show()
 
+
+def testIntegralshift():
+    """open a binarised test image, compute integral shift for some cells
+    """
+
+    import matplotlib.pyplot as plt
+    import matplotlib.lines as mlines
+    import matplotlib.patches as mpatches
+
+    print 'test MS'
+    im = imread('../test/data/exp0001.jpg')
+    target = IntegratedImage(im)
+
+    fig = plt.figure()
+    ax = plt.axes([0,0,1,1])
+    plt.imshow(im, interpolation='nearest')
+
+
+    cellLocations = [(340,190),(474,331),(120,231)]
+    n = len(cellLocations)
+    N = 8
+    halo_radius = 10
+    w_halo = 15
+
+    #create N boxes around current cell position
+
+    angles = np.arange(0,2*np.pi,2*np.pi/N)
+    for center in cellLocations:
+
+        for a in angles:
+            r = center[1]+halo_radius*np.cos(a)
+            c = center[0]+halo_radius*np.sin(a)
+            rg,cg,path = shift(target,r,c,w_halo,adapt='none',N=40)
+
+            print rg,cg,r,c
+
+            start = mpatches.Circle((c,r), 0.5,fc=[1,1,1],ec='none',alpha=.25)
+            stop = mpatches.Circle((cg,rg), 0.5,ec=[1,1,1],fc='none')
+            line = mlines.Line2D(path[:,1], path[:,0], lw=1, color = 'k')
+#            plt.gca().add_patch(start)
+            plt.gca().add_patch(stop)
+            ax.add_line(line)
+
+
+
+
+
+    plt.show()
+
+
 if __name__ == "__main__":
-    test()
+    testIntegralshift()
+#    test()
 
 
 

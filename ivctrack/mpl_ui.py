@@ -30,27 +30,31 @@ class CellUi(object):
         self.h=[]
         #create an interactive polygon
 
-    def draw_triangles(self,ax):
+    def draw_triangles(self,ax,halo=True,soma=True):
         """Draws all the triangle in the given Matplotlib axis (ax)
         """
         idxx = [0,2,4,0]
         idxy = [1,3,5,1]
-        for tri in self.cell.tri_soma:
-            self.h.append(ax.plot(npy.take(tri,idxx),npy.take(tri,idxy),color = [.5,.5,.5]))
-        for tri in self.cell.tri_halo:
-            self.h.append(ax.plot(npy.take(tri,idxx),npy.take(tri,idxy),color = [.5,.5,.5]))
+        if soma:
+            for tri in self.cell.tri_soma:
+                self.h.append(ax.plot(npy.take(tri,idxx),npy.take(tri,idxy),color = [.5,.5,.5]))
+        if halo:
+            for tri in self.cell.tri_halo:
+                self.h.append(ax.plot(npy.take(tri,idxx),npy.take(tri,idxy),color = [.5,.5,.5]))
 
-    def draw_centroids(self,ax):
+    def draw_centroids(self,ax,halo=True,soma=True):
         """Draws all the centroids in the given Matplotlib axis (ax)
         """
-        for sh in self.cell.shift_halo:
-            r = plt.Rectangle((sh[0]-1,sh[1]-1),3,3, facecolor=[.8,.8,.8])
-            self.h.append(ax.add_artist(r))
-        for sh in self.cell.shift_soma:
-            r = plt.Rectangle((sh[0]-1,sh[1]-1),3,3, facecolor=[.1,.1,.1])
-            self.h.append(ax.add_artist(r))
+        if halo:
+            for sh in self.cell.shift_halo:
+                r = plt.Rectangle((sh[0]-1,sh[1]-1),3,3, facecolor=[.8,.8,.8])
+                self.h.append(ax.add_artist(r))
+        if soma:
+            for sh in self.cell.shift_soma:
+                r = plt.Rectangle((sh[0]-1,sh[1]-1),3,3, facecolor=[.1,.1,.1])
+                self.h.append(ax.add_artist(r))
 
-    def draw(self,ax):
+    def draw(self,ax,soma=True,halo=True):
         if len(self.h):
             for h in list(self.h):
                 print h,type(h)
@@ -64,8 +68,8 @@ class CellUi(object):
 
         r = plt.Rectangle((self.cell.center[0]-1,self.cell.center[1]-1),3,3, facecolor=[.5,.5,.1])
         self.h.append(ax.add_artist(r))
-        self.draw_triangles(ax)
-        self.draw_centroids(ax)
+        self.draw_triangles(ax,soma=soma,halo=halo)
+        self.draw_centroids(ax,soma=soma,halo=halo)
 
 
 from matplotlib.artist import Artist

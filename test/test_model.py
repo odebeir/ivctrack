@@ -85,24 +85,21 @@ def test_static():
 
     plt.show()
 
-def test_N(n_list=[3,5,8,16,32],model=Cell):
+def test_N(n,model=Cell,soma=True,halo=True):
     """Test function: illustrate the N parameter (#of pies of the model)
     """
     im = imread(os.path.join(os.path.dirname(__file__),'../test/data/exp0001.jpg'))
     cellLocations = [(340,190),(474,331),(120,231)]
-    for N in n_list:
-        fig = plt.figure()
-        ax = fig.add_subplot(111)
-        ax.imshow(im, interpolation='nearest')
-        params = {'N':N,'radius_halo':25,'radius_soma':10}
-        cell_list = [ model(x0,y0,**params)  for x0,y0 in cellLocations ]
-        for c in cell_list:
-            c.update(im)
-            CellUi(c,ax).draw(ax)
-            plt.title('#pies = %d'%N)
-        ax.set_xlim([300,400])
-        ax.set_ylim([100,250])
-    plt.show()
+    ax=plt.gca()
+    plt.imshow(im, interpolation='nearest')
+    params = {'N':n,'radius_halo':25,'radius_soma':10}
+    cell_list = [ model(x0,y0,**params)  for x0,y0 in cellLocations ]
+    for c in cell_list:
+        c.update(im)
+        CellUi(c,ax).draw(ax,soma=soma,halo=halo)
+        plt.title('#pies = %d'%n)
+    ax.set_xlim([300,400])
+    ax.set_ylim([100,250])
 
 def test_sequence():
     """Test function: track some cells in a small sequence, illustration is grabbed to .png files

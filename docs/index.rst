@@ -39,8 +39,6 @@ was used in several publications for cell speed measurement [deb05]_ and cell ch
 
 * stabilizing a first version, with a basic documentation, adding more examples
 
-* developing a second tracking model which take into account possible cell shape changes (adaptive model)
-
 * testing a meanshift based on integral image
 
 * developing GUIs for cell marking, interactive result visualization

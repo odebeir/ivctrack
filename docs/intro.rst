@@ -15,7 +15,7 @@ are possible [ref are needed]:
 The proposed method in ivctrack belongs to the second approach. The toolbox does not segment the image, it tracks
 cells adjusting a model on new frame.
 
-Cell model
+Cell models
 -----------------
 
 Similarly to the method described in [deb05]_ the neighborhood of the cell is divided into N triangles centered on the
@@ -32,10 +32,20 @@ The method developed in this toolbox is a little bit different from these descri
 to the shape of the inner triangles which are put in a reversed direction. This option gives better results for the soma
 detection.
 
+As far two cell models are available, an isotropic model, for which all the pies have the same size, and an adaptive model
+for which the size of a pie depends on the previous distance between the cell center and the corresponding halo centroid.
+
+
+Isotropic model
+++++++++++++++++
+
 The following figure illustrate how the space around a cell is decomposed into pies (N=16). Large pies are in charge of
 finding the halo, smaller inner pies are responsible for the soma.
 
 .. plot:: code/ex2.py
+
+Adaptive model
+++++++++++++++++
 
 The previous figure uses an isotropic cell model (Cell), the following example shows how the adaptive
 cell model (AdaptiveCell) adjust the pie sizes with respect to the tracked object (in that second model
@@ -43,6 +53,10 @@ the number of soma inner pies is divided by 2).
 
 .. plot:: code/ex3.py
 
+The adaptive model might give better results on elongated cells or cells for which the radius undergoes large variation
+(e.g. during mitosis).
+
+This model should be favoured in future developments.
 
 Implementation
 ------------------
