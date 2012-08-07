@@ -117,7 +117,8 @@ class ZipSource(object):
         """
         name_list = self.zf.namelist()
 
-        pattern = re.compile(r'(exp)([0-9]{4})') #searching for images such as 'exp0001'
+#        pattern = re.compile(r'(exp)([0-9]{4})', flags=re.IGNORECASE) #searching for images such as 'exp0001'
+        pattern = re.compile(r'([^0-9]*)([0-9]*)', flags=re.IGNORECASE) #searching for images such as 'not_a_number01'
 
         im_list = []
         t = 0 #zero indexed frame number
@@ -125,7 +126,7 @@ class ZipSource(object):
             [name,ext] = path.splitext(n)
             m = pattern.match(name)
             if m:
-                im_list.append((int(m.group(2)),n,ext[1:],t))
+                im_list.append((int(m.group(2)),n,ext[1:],t,m.group(1)))
                 t += 1
 
         #analyse the serie
@@ -133,7 +134,7 @@ class ZipSource(object):
             self.first = im_list[0][0]
             self.last = im_list[-1][0]
             #search for missing numbers
-            self.missing = set(range(self.first,self.last+1)) - set([n for n,m,ext,t in im_list ])
+            self.missing = set(range(self.first,self.last+1)) - set([n for n,m,ext,t,prefix in im_list ])
         else:
             self.first = 0
             self.last = 0
@@ -186,10 +187,10 @@ class ZipSource(object):
         if read_dir not in ['fwd','rev']:
             raise ValueError("dir must be in ['fwd','rev']")
         if read_dir=='rev':
-            for n,f,ext,t in self.im_list[last_frame:first_frame:-1]:
+            for n,f,ext,t,prefix in self.im_list[last_frame:first_frame:-1]:
                 yield (t,self.read_image(f))
         if read_dir=='fwd':
-            for n,f,ext,t in self.im_list[first_frame:last_frame:1]:
+            for n,f,ext,t,prefix in self.im_list[first_frame:last_frame:1]:
                 yield (t,self.read_image(f))
 
     def generator2(self):

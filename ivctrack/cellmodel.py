@@ -198,6 +198,7 @@ class AdaptiveCell(Cell):
         raddii are adjusted accordingly to the previous size
         """
         self.path = npy.zeros((self.niter,2))
+        prev_center = self.center.copy()
         for iter in range(self.niter):
             #compute the shifts
             self.shift_halo = meanshift(im,self.tri_halo,0.0,0.0,lut = self.LutW)
@@ -212,7 +213,8 @@ class AdaptiveCell(Cell):
             halo_mean = halo.mean(axis=0)
             soma_mean = soma.mean(axis=0)
 
-            self.center[:] = (1.-self.alpha) * soma_mean + self.alpha * halo_mean
+            move = ((1.-self.alpha) * soma_mean + self.alpha * halo_mean)-self.center[:]
+            self.center[:] = self.center[:] +  move
             self.path[iter,:] = self.center
 
             #update previous radii
@@ -226,6 +228,14 @@ class AdaptiveCell(Cell):
 
             #update the triangles
             self.update_triangles()
+
+            #check for early stop (if cell center does not move far)
+            diff = npy.linalg.norm(self.center - prev_center)
+            prev_center = self.center.copy()
+            if diff<.1:
+                self.path[iter:,:] = self.center
+                break
+
 
 
 class Track(object):

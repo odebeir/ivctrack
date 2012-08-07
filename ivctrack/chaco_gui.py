@@ -278,9 +278,11 @@ def test_gui(datazip_filename):
 if __name__ == "__main__":
 
 
-    datazip_filename = '../test/data/seq0.zip'
-#    datazip_filename = '../test/data/seq0_extract.zip'
+#    datazip_filename = '../test/data/seq0.zip'
+    datazip_filename = '../test/data/seq0_extract.zip'
 #    datazip_filename = '../test/data/u373s08127ct1.zip'
+#    datazip_filename = '../test/data/hct15ct3.zip'
+#    datazip_filename = '../test/data/panc1ct3.zip'
 
     reader = Reader(ZipSource(datazip_filename))
 
