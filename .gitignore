@@ -6,6 +6,14 @@
 *.bmp
 *.log
 *.tif
+*~
+*#
+*egg-info
+*.bak
+*.c
+*.new
+*.md5
+*.old
 
 #python specific
 ###################
@@ -50,7 +58,7 @@ Thumbs.db
 ####################
 test/temp/*
 test/data/*
-docs/_build/*
+doc/_build/*
 build/*
 MANIFEST
 dist/*
@@ -58,4 +66,5 @@ small.hdf5
 tracks.hdf5
 parameters.json
 marks.csv
-
+.idea/
+ivctrack/version.py
