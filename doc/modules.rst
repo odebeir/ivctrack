@@ -9,31 +9,31 @@ This module implement basically the command IVCT_CMD which provides an direct in
 
 Generic help
 
-.. program-output:: python ../ivctrack/ivct_cmd.py --help
+``python ../ivctrack/ivct_cmd.py --help``
 
 Tracking of a sequence
 
-.. program-output:: python ../ivctrack/ivct_cmd.py track --help
+``python ../ivctrack/ivct_cmd.py track --help``
 
 Interactive cell-marking
 
-.. program-output:: python ../ivctrack/ivct_cmd.py mark --help
+``python ../ivctrack/ivct_cmd.py mark --help``
 
 Testing the validity of a sequence
 
-.. program-output:: python ../ivctrack/ivct_cmd.py test --help
+``python ../ivctrack/ivct_cmd.py test --help``
 
 Playing a tracked sequence
 
-.. program-output:: python ../ivctrack/ivct_cmd.py play --help
+``python ../ivctrack/ivct_cmd.py play --help``
 
 Plotting trajectory results
 
-.. program-output:: python ../ivctrack/ivct_cmd.py plot --help
+``python ../ivctrack/ivct_cmd.py plot --help``
 
 Exporting data
 
-.. program-output:: python ../ivctrack/ivct_cmd.py export --help
+``python ../ivctrack/ivct_cmd.py export --help``
 
 
 .. automodule:: ivctrack.ivct_cmd
