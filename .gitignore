@@ -1,11 +1,7 @@
 # generic files to ignore
 #########################
 .idea
-*.jpg
-*.png
-*.bmp
 *.log
-*.tif
 *~
 *#
 *egg-info
@@ -68,3 +64,4 @@ parameters.json
 marks.csv
 .idea/
 ivctrack/version.py
+_static/
