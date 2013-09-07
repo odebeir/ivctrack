@@ -119,13 +119,13 @@ track the test sequence (fwd direction using marks on the first frame)
 
 the trajectories are savec in a given hdf5 filename or in track.hdf5 in currrent path
 
-*************************************************************************
-From here it may be problem with the backend an qt install (e.g. on mac) this is to be fixed
+
+
+    From here it may be problem with the backend an qt install (e.g. on mac) this is to be fixed**
 
 open a gui for the test sequence
 --------------------------------
 
 > python ivct_cmd.py gui --seq ../test/data/seq0_extract.zip
 
-*************************************************************************
 
