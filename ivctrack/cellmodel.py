@@ -375,6 +375,14 @@ def test_experiment(datazip_filename,marks_filename,hdf5_filename,dir='fwd',para
     marks = import_marks(marks_filename)
     if params is None:
         params = {'N':12,'radius_halo':20,'radius_soma':15,'exp_halo':15,'exp_soma':2,'niter':5,'alpha':.75}
+        import json
+        s = json.dumps(params)
+        print s
+        filename = 'defaults_parameters.json'
+        fid = open(filename,'w+t')
+        fid.write(s)
+        del fid
+        print 'parameters saved in ',filename
 
     track_list = []
     for x0,y0,frame0 in marks:
@@ -407,4 +415,4 @@ if __name__ == "__main__":
 
     p.sort_stats('time').print_stats(20)
 
-    p.sort_stats('time', 'cum').print_stats(.5, 'init')
+    p.sort_stats('time', 'cumulative').print_stats(.5, 'init')

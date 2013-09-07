@@ -23,7 +23,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
 
 from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button, Trait, Float, Enum, Bool
-from traitsui.api import RangeEditor,ValueEditor,TableEditor,CustomEditor,TreeEditor,CompoundEditor,EnumEditor
+from traitsui.api import RangeEditor,EnumEditor
 from traitsui.api import HGroup,VGroup,View,Group, Item
 from enable.component_editor import ComponentEditor
 from chaco.api import Plot, ArrayPlotData, jet, gray
@@ -278,8 +278,8 @@ def test_gui(datazip_filename):
 if __name__ == "__main__":
 
 
-    datazip_filename = '../test/data/seq0.zip'
-#    datazip_filename = '../test/data/seq0_extract.zip'
+#    datazip_filename = '../test/data/seq0.zip'
+    datazip_filename = '../test/data/seq0_extract.zip'
 #    datazip_filename = '../test/data/u373s08127ct1.zip'
 
     reader = Reader(ZipSource(datazip_filename))

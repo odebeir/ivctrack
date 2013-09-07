@@ -2,14 +2,19 @@ import wx
 
 import matplotlib
 # We want matplotlib to use a wxPython backend
+
 matplotlib.use('WXAgg')
 from matplotlib.backends.backend_wxagg import FigureCanvasWxAgg as FigureCanvas
-from matplotlib.figure import Figure
 from matplotlib.backends.backend_wx import NavigationToolbar2Wx
+#from matplotlib.backends.backend_qt4agg import FigureCanvasQTAgg as FigureCanvas
+#from matplotlib.backends.backend_wx import NavigationToolbar2Wx
 
-from enthought.traits.api import Any, Instance
-from enthought.traits.ui.wx.editor import Editor
-from enthought.traits.ui.wx.basic_editor_factory import BasicEditorFactory
+
+from matplotlib.figure import Figure
+
+from traits.api import Any, Instance
+from traits.ui.wx.editor import Editor
+from traits.ui.wx.basic_editor_factory import BasicEditorFactory
 
 class _MPLFigureEditor(Editor):
 
