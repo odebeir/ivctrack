@@ -277,14 +277,16 @@ def test_gui(datazip_filename):
 
 if __name__ == "__main__":
 
-
+    prefix = None
 #    datazip_filename = '../test/data/seq0.zip'
-    datazip_filename = '../test/data/seq0_extract.zip'
+#     datazip_filename = '../test/data/seq0_extract.zip'
+    datazip_filename = '../test/data/Wetzel2013/NPC_track.zip'
+    prefix = '20130607_Exp672_P001_C001_T'
 #    datazip_filename = '../test/data/u373s08127ct1.zip'
 #    datazip_filename = '../test/data/hct15ct3.zip'
 #    datazip_filename = '../test/data/panc1ct3.zip'
 
-    reader = Reader(ZipSource(datazip_filename))
+    reader = Reader(ZipSource(datazip_filename,prefix))
 
     params = {'N':16,'radius_halo':23,'radius_soma':12,'exp_halo':20,'exp_soma':2,'niter':10,'alpha':.75}
 

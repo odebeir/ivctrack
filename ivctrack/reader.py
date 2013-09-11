@@ -169,6 +169,15 @@ class ZipSource(object):
 
         if im.mode == 'I;16B':
             r = np.asarray(im.im,dtype=np.uint16).reshape(im.size[-1::-1])
+            rmin = np.amin(r)
+            rmax = np.amax(r)
+            d = rmax-rmin
+            print rmin,rmax,d
+            if d:
+                r = (255*(1.*r-rmin)/d).astype(np.uint8)
+            else:
+                r = r.astype(np.uint8)
+
         else:
             r = np.asarray(im)
 
