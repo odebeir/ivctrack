@@ -166,7 +166,18 @@ class ZipSource(object):
         p = ImageFile.Parser()
         p.feed(data)
         im = p.close()
-        return np.asarray(im)
+
+        if im.mode == 'I;16B':
+            r = np.asarray(im.im,dtype=np.uint16).reshape(im.size[-1::-1])
+        else:
+            r = np.asarray(im)
+
+        # import matplotlib.pyplot as plt
+        # plt.imshow(r)
+        # plt.colorbar()
+        # plt.show()
+
+        return r
 
     @lru_cache(100)
     def read_image(self,image_name):
@@ -174,7 +185,8 @@ class ZipSource(object):
         """
         fid = self.zf.open(image_name)
         image_data = fid.read()
-        return self.parse_imagedata(image_data)
+        im = self.parse_imagedata(image_data)
+        return im
 
     def read_imagedata(self,image_name):
         """returns compressed image data
@@ -249,6 +261,7 @@ def main():
     # TIF zip
     datazip_filename = '../test/data/Wetzel2013/NPC_track.zip'
     prefix = '20130607_Exp672_P001_C001_T'
+
 #    datazip_filename = '../test/data/seq0.zip'
 
     source = ZipSource(datazip_filename,prefix)
