@@ -24,7 +24,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 from traits.api import HasTraits, Instance, Int, Dict, Class, Range, DelegatesTo, CArray, Button, Trait, Float, Enum, Bool
 from traitsui.api import RangeEditor,ValueEditor,TableEditor,CustomEditor,TreeEditor,CompoundEditor,EnumEditor
-from traitsui.api import HGroup,VGroup,View,Group, Item
+from traitsui.api import HGroup,VGroup,View,Group, Item, VSplit, HSplit
 from enable.component_editor import ComponentEditor
 from chaco.api import Plot, ArrayPlotData, jet, gray
 from chaco.plot_graphics_context import PlotGraphicsContext
@@ -108,7 +108,7 @@ class ScatterPlotTraits(HasTraits):
     cursor1pos = DelegatesTo('cursor1', prefix='current_position')
 
     traits_view = View(
-        HGroup(VGroup(
+        HSplit(VGroup(
             Item(name='model',
                 editor=EnumEditor(values={
                     Cell : '1:Cell',
