@@ -27,7 +27,7 @@ from zipfile import ZipFile
 import os.path as path
 import re
 import ImageFile
-import numpy as npy
+import numpy as np
 
 from helpers import timeit,lru_cache
 
@@ -166,7 +166,7 @@ class ZipSource(object):
         p = ImageFile.Parser()
         p.feed(data)
         im = p.close()
-        return npy.asarray(im)
+        return np.asarray(im)
 
     @lru_cache(100)
     def read_image(self,image_name):
@@ -236,7 +236,7 @@ class DumbSource(object):
         """read compressed data and returns a numpy array
         """
 
-        return npy.zeros((1,1))
+        return np.zeros((1,1))
 
 @timeit
 def main():
@@ -258,25 +258,26 @@ def main():
     for frame,im in g:
        print frame,im,im.dtype,im.shape
 
-    #test the data access using a Reader
-    reader = Reader(source)
-    print reader.rewind()
-    while True:
-        try:
-            print reader.next().shape
-        except IndexError:
-            break
-
-    print reader.ff()
-    while True:
-        try:
-            print reader.prev().shape
-        except IndexError:
-            break
-
-    reader.moveto(10)
-    print reader.head
-    print reader.getframe()
+    # #test the data access using a Reader
+    # reader = Reader(source)
+    # print reader.rewind()
+    # while True:
+    #     try:
+    #         ima = reader.next()
+    #         print ima
+    #     except IndexError:
+    #         break
+    #
+    # print reader.ff()
+    # while True:
+    #     try:
+    #         print reader.prev().shape
+    #     except IndexError:
+    #         break
+    #
+    # reader.moveto(10)
+    # print reader.head
+    # print reader.getframe()
 
 if __name__=='__main__':
 
