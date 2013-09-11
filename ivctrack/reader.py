@@ -103,23 +103,26 @@ class ZipSource(object):
     """Object that is responsible for opening an experiment ZIP file containing all the images sequence
     it delivers a generator that serves all the sequence content
     """
-    def __init__(self,filename):
+    def __init__(self,filename,prefix = None):
         """create an object using the zipfile ´´filename´´
         """
         self.description = filename
         self.zipfilename = filename
         self.zf = ZipFile(self.zipfilename, 'r')
-        self.build_image_list()
+        self.build_image_list(prefix)
 
-    def build_image_list(self):
+    def build_image_list(self,prefix = None):
         """returns a list of tuple of valid image filename contained in the zip file
         [(#frame,image_filename,extension)]
         """
         name_list = self.zf.namelist()
 
-#        pattern = re.compile(r'(exp)([0-9]{4})', flags=re.IGNORECASE) #searching for images such as 'exp0001'
-        pattern = re.compile(r'([^0-9]*)([0-9]*)', flags=re.IGNORECASE) #searching for images such as 'not_a_number01'
-
+        if prefix is None:
+    #        pattern = re.compile(r'(exp)([0-9]{4})', flags=re.IGNORECASE) #searching for images such as 'exp0001'
+            pattern = re.compile(r'([^0-9]*)([0-9]*)', flags=re.IGNORECASE) #searching for images such as 'not_a_number01'
+        else:
+            pattern = re.compile('(%s)([0-9]*)'%prefix, flags=re.IGNORECASE) #searching for images such as 'not_a_number01'
+            print pattern
         im_list = []
         t = 0 #zero indexed frame number
         for n in sorted(name_list):
@@ -239,11 +242,16 @@ class DumbSource(object):
 def main():
     """open data sample
     """
+    # JPG zip
     datazip_filename = '../test/data/seq0_extract.zip'
+    prefix = 'exp'
+
+    # TIF zip
+    datazip_filename = '../test/data/Wetzel2013/NPC_track.zip'
+    prefix = '20130607_Exp672_P001_C001_T'
 #    datazip_filename = '../test/data/seq0.zip'
 
-    source = ZipSource(datazip_filename)
-    print source
+    source = ZipSource(datazip_filename,prefix)
 
 #    source.check_images()
     g = source.generator()
