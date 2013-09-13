@@ -21,9 +21,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 """
-def test_source(source):
+def test_source(source,prefix=None):
     from reader import ZipSource
-    source = ZipSource(source)
+    source = ZipSource(source,prefix)
     print source
 
 def test_marks(filename):
@@ -31,12 +31,12 @@ def test_marks(filename):
     m = import_marks(filename)
     print m
 
-def track(source,dir,marks,hdf5,params):
+def track(source,dir,marks,hdf5,params,prefix):
     import json
     s = json.loads(open(params).read())
     print s
     from cellmodel import test_experiment
-    test_experiment(datazip_filename=source,marks_filename=marks,hdf5_filename=hdf5,dir=dir,params=s)
+    test_experiment(datazip_filename=source,marks_filename=marks,hdf5_filename=hdf5,dir=dir,params=s,prefix=prefix)
 
 def play(source,hdf5):
     from player import test_player
@@ -97,6 +97,7 @@ if __name__ == '__main__':
     parser_track.add_argument("--dir", choices=['fwd','rev','both'],help="tracking direction",default='fwd')
     parser_track.add_argument("--hdf5", type=str,help="HDF5 destination filepath",default='tracks.hdf5')
     parser_track.add_argument("--params", type=str,help="parameters file (.json)",default='parameters.json')
+    parser_track.add_argument("--prefix", type=str,help="image prefix",default=None)
     parser_track.set_defaults(mode='track')
 
     parser_play = subparsers.add_parser('play', help='play a tracked sequence',
@@ -137,13 +138,13 @@ if __name__ == '__main__':
     if args.mode == 'track':
         if args.seq is not None:
             print 'source=',args.seq
-            test_source(args.seq)
+            test_source(args.seq,args.prefix)
         else:
             print '--seq needed'
             parser.print_usage()
             exit(1)
         print 'dir=',args.dir
-        track(source=args.seq,dir=args.dir,marks=args.marks,hdf5=args.hdf5,params=args.params)
+        track(source=args.seq,dir=args.dir,marks=args.marks,hdf5=args.hdf5,params=args.params,prefix=args.prefix)
 
     if args.mode == 'play':
         if args.seq is not None:

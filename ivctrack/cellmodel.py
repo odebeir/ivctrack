@@ -372,12 +372,12 @@ def import_marks(filename):
         marks.append((float(row[0]),float(row[1]),float(row[2])))
     return npy.asarray(marks)
 
-def test_experiment(datazip_filename,marks_filename,hdf5_filename,dir='fwd',params=None):
+def test_experiment(datazip_filename,marks_filename,hdf5_filename,dir='fwd',params=None,prefix=None):
     """Test function: create an Experiment object for a sequence, data are saved in HDF5 file
     """
     #define sequence source
 #    datazip_filename = '../test/data/seq0.zip'
-    reader = Reader(ZipSource(datazip_filename))
+    reader = Reader(ZipSource(datazip_filename,prefix))
 
     experiment = Experiment(reader,exp_name='Test')
 
